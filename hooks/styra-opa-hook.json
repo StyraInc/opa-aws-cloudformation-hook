@@ -16,19 +16,22 @@
     "handlers": {
         "preCreate": {
             "targetNames": [
-                "AWS::S3::Bucket"
+                "AWS::S3::Bucket",
+                "AWS::S3::BucketPolicy"
             ],
             "permissions": []
         },
         "preUpdate": {
             "targetNames": [
-                "AWS::S3::Bucket"
+                "AWS::S3::Bucket",
+                "AWS::S3::BucketPolicy"
             ],
             "permissions": []
         },
         "preDelete": {
             "targetNames": [
-                "AWS::S3::Bucket"
+                "AWS::S3::Bucket",
+                "AWS::S3::BucketPolicy"
             ],
             "permissions": []
         }

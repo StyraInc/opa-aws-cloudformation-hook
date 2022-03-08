@@ -9,3 +9,24 @@ Resources:
       Tags:
         - Key: Owner
           Value: Anders
+  MyBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref MyS3Bucket
+      PolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Action:
+              - 's3:GetObject'
+            Effect: Allow
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref MyS3Bucket
+                - /*
+            Principal: '*'
+            Condition:
+              StringLike:
+                'aws:Referer':
+                  - 'http://www.example.com/*'
+                  - 'http://example.net/*'

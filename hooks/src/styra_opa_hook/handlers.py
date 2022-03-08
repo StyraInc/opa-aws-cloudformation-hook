@@ -33,24 +33,48 @@ def pre_create_handler(
         callback_context: MutableMapping[str, Any],
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
+    target_name = request.hookContext.targetName
     target_model = request.hookContext.targetModel
     progress: ProgressEvent = ProgressEvent(
         status=OperationStatus.IN_PROGRESS
     )
 
-    LOG.info("Internal testing hook triggered for target: " + request.hookContext.targetName)
+    LOG.info("Internal testing hook triggered for target: " + target_name)
 
     resource_properties = target_model.get("resourceProperties")
     LOG.info(resource_properties)
 
-    r = requests.post(type_configuration.OpaUrl, json={input: resource_properties})
+    input = {
+        "input": {
+            "target_name": target_name,
+            "target_model": target_model,
+            "properties": resource_properties
+        }
+    }
+
+    r = requests.post(type_configuration.OpaUrl, json=input)
 
     if r.status_code == 200:
         LOG.info("Response status == 200")
-        LOG.info(r.json())
+        body = r.json()
+        if body.result is None:
+            LOG.error("OPA returned empty/undefined result")
+            progress.status = OperationStatus.FAILED
+        else:
+            LOG.info(body)
+            result = body.result
+            if len(result) == 0:
+                # deny style rule, so empty result == success
+                progress.status = OperationStatus.SUCCESS
+            else:
+                LOG.error(result)
+                progress.status = OperationStatus.FAILED
+                progress.message = " | ".join(result)
+        
     else:
         LOG.error("Error:" + r.status_code)
         LOG.info(r.json())
+        progress.status = OperationStatus.FAILED
     try:
         if isinstance(session, SessionProxy):
             client = session.client("s3")
