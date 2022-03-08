@@ -57,12 +57,12 @@ def pre_create_handler(
     if r.status_code == 200:
         LOG.info("Response status == 200")
         body = r.json()
-        if body.result is None:
+        LOG.info(body)
+        if not "result" in body:
             LOG.error("OPA returned empty/undefined result")
             progress.status = OperationStatus.FAILED
         else:
-            LOG.info(body)
-            result = body.result
+            result = body["result"]
             if len(result) == 0:
                 # deny style rule, so empty result == success
                 progress.status = OperationStatus.SUCCESS
@@ -73,16 +73,8 @@ def pre_create_handler(
         
     else:
         LOG.error("Error:" + r.status_code)
-        LOG.info(r.json())
+        LOG.error(r.json())
         progress.status = OperationStatus.FAILED
-    try:
-        if isinstance(session, SessionProxy):
-            client = session.client("s3")
-
-        progress.status = OperationStatus.FAILED
-
-    except TypeError as e:
-        raise exceptions.InternalFailure(f"was not expecting type {e}")
 
     return progress
 
