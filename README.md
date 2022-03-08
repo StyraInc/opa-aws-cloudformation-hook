@@ -18,11 +18,15 @@ from the response and store it in an environment variable:
 export HOOK_TYPE_ARN="arn:aws:cloudformation:eu-north-1:677200501247:type/hook/Styra-OPA-Hook"
 ```
 
+Next, set the AWS region and the URL to use for calling OPA. I'm using [ngrok](https://ngrok.com/) 
+for exposing an OPA running locally to the public, but there are obviously many ways to accomplish this.
 
 ```shell
 export AWS_REGION="eu-north-1"
 export OPA_URL="http://206d-46-182-202-220.ngrok.io/v1/data/policy/deny"
 ```
+
+With the configuration variables set, push the configuration to AWS:
 
 ```shell
 aws cloudformation --region "$AWS_REGION" set-type-configuration \
@@ -30,28 +34,35 @@ aws cloudformation --region "$AWS_REGION" set-type-configuration \
   --type-arn $HOOK_TYPE_ARN
 ```
 
-```shell
-aws cloudformation delete-stack --stack-name my-s3-stack
-aws cloudformation create-stack --stack-name cfn-s3 --template-body file://templates/s3.yaml
-aws cloudformation describe-stack-events --stack-name cfn-s3
+The hook is now installed. You can now try to push the S3 bucket stack provided in the templates directory:
 
-# After changes
-aws cloudformation update-stack --stack-name demo-s3 --template-body file://s3.yaml
+```shell
+aws cloudformation create-stack --stack-name cfn-s3 --template-body file://templates/s3.yaml
 ```
+
+To see the outcome of the stack creation, use `describe-stack-events`:
+
+```shell
+aws cloudformation describe-stack-events --stack-name cfn-s3
+```
+
+If you want to re-run the stack creation, remember to delete the existing one first:
+
+```shell
+aws cloudformation delete-stack --stack-name cfn-s3
+```
+
+Or update the stack:
+
+```shell
+aws cloudformation update-stack --stack-name cfn-s3 --template-body file://templates/s3.yaml
+```
+
+## Logs
+
+Any logs emitted from the Python hook can be found under CloudWatch in your AWS account.
+
+## Docs
 
 See docs on registering the hook here:
 https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html
-
-
-Test the hook by deploying a new S3 bucket (i.e. stack):
-```shell
-aws cloudformation create-stack \
-  --stack-name my-s3-stack \
-  --template-body file://templates/s3.yaml
-```
-
-See the 
-
-```shell
-aws cloudformation describe-stack-events --stack-name my-s3-stack
-```
