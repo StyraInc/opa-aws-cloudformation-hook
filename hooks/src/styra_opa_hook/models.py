@@ -34,6 +34,7 @@ class HookHandlerRequest(BaseHookHandlerRequest):
 
 @dataclass
 class TypeConfigurationModel(BaseModel):
+    OpaUrl: Optional[str]
 
     @classmethod
     def _deserialize(
@@ -43,6 +44,7 @@ class TypeConfigurationModel(BaseModel):
         if not json_data:
             return None
         return cls(
+            OpaUrl=json_data.get("OpaUrl"),
         )
 
 

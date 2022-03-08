@@ -1,0 +1,11 @@
+{
+    "properties": {
+        "OpaUrl": {
+            "description": "URL pointing to OPA for policy decisions",
+            "type": "string"
+        }
+    },
+    "additionalProperties": false,
+    "definitions": {},
+    "typeName": "Styra::OPA::Hook"
+}

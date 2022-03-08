@@ -1,6 +1,8 @@
 import logging
 from typing import Any, MutableMapping, Optional
 
+import requests
+
 from cloudformation_cli_python_lib import (
     BaseHookHandlerRequest,
     HandlerErrorCode,
@@ -16,6 +18,8 @@ from .models import HookHandlerRequest, TypeConfigurationModel
 
 # Use this logger to forward log messages to CloudWatch Logs.
 LOG = logging.getLogger(__name__)
+LOG.setLevel(logging.INFO)
+
 TYPE_NAME = "Styra::OPA::Hook"
 
 hook = Hook(TYPE_NAME, TypeConfigurationModel)
@@ -33,22 +37,28 @@ def pre_create_handler(
     progress: ProgressEvent = ProgressEvent(
         status=OperationStatus.IN_PROGRESS
     )
-    # TODO: put code here
 
-    # Example:
+    LOG.info("Internal testing hook triggered for target: " + request.hookContext.targetName)
+
+    resource_properties = target_model.get("resourceProperties")
+    LOG.info(resource_properties)
+
+    r = requests.post(type_configuration.OpaUrl, json={input: resource_properties})
+
+    if r.status_code == 200:
+        LOG.info("Response status == 200")
+        LOG.info(r.json())
+    else:
+        LOG.error("Error:" + r.status_code)
+        LOG.info(r.json())
     try:
-        # Reading the Resource Hook's target properties
-        resource_properties = target_model.get("resourceProperties")
-
         if isinstance(session, SessionProxy):
             client = session.client("s3")
-        # Setting Status to success will signal to cfn that the hook operation is complete
-        progress.status = OperationStatus.SUCCESS
+
+        progress.status = OperationStatus.FAILED
+
     except TypeError as e:
-        # exceptions module lets CloudFormation know the type of failure that occurred
         raise exceptions.InternalFailure(f"was not expecting type {e}")
-        # this can also be done by returning a failed progress event
-        # return ProgressEvent.failed(HandlerErrorCode.InternalFailure, f"was not expecting type {e}")
 
     return progress
 
