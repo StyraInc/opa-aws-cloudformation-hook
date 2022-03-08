@@ -1,10 +1,10 @@
 {
     "artifact_type": "HOOK",
-    "typeName": "Eknert::Opa::Hook",
-    "language": "java",
-    "runtime": "java8",
-    "entrypoint": "com.eknert.opa.hook.HookHandlerWrapper::handleRequest",
-    "testEntrypoint": "com.eknert.opa.hook.HookHandlerWrapper::testEntrypoint",
+    "typeName": "Styra::OPA::Hook",
+    "language": "python37",
+    "runtime": "python3.7",
+    "entrypoint": "styra_opa_hook.handlers.hook",
+    "testEntrypoint": "styra_opa_hook.handlers.test_entrypoint",
     "settings": {
         "version": false,
         "subparser_name": null,
@@ -15,14 +15,7 @@
         "endpoint_url": null,
         "region": null,
         "target_schemas": [],
-        "namespace": [
-            "com",
-            "eknert",
-            "opa",
-            "hook"
-        ],
-        "codegen_template_path": "default",
+        "use_docker": true,
         "protocolVersion": "2.0.0"
-    },
-    "executableEntrypoint": "com.eknert.opa.hook.HookHandlerWrapperExecutable"
+    }
 }

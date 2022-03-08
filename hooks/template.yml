@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
-Description: AWS SAM template for the Eknert::Opa::Hook resource type
+Description: AWS SAM template for the Styra::OPA::Hook resource type
 
 Globals:
   Function:
@@ -11,14 +11,14 @@ Resources:
   TypeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.eknert.opa.hook.HookHandlerWrapper::handleRequest
-      Runtime: java8
-      CodeUri: ./target/eknert-opa-hook-handler-1.0-SNAPSHOT.jar
+      Handler: styra_opa_hook.handlers.hook
+      Runtime: python3.7
+      CodeUri: build/
 
   TestEntrypoint:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: com.eknert.opa.hook.HookHandlerWrapper::testEntrypoint
-      Runtime: java8
-      CodeUri: ./target/eknert-opa-hook-handler-1.0-SNAPSHOT.jar
+      Handler: styra_opa_hook.handlers.test_entrypoint
+      Runtime: python3.7
+      CodeUri: build/
 
