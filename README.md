@@ -34,6 +34,8 @@ aws cloudformation --region "$AWS_REGION" set-type-configuration \
   --type-arn $HOOK_TYPE_ARN
 ```
 
+## Testing stack creation
+
 The hook is now installed. You can now try to push the S3 bucket stack provided in the templates directory:
 
 ```shell
