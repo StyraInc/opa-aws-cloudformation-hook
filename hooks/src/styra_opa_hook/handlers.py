@@ -35,9 +35,13 @@ def opa_query(request: HookHandlerRequest, action: str, url: str) -> ProgressEve
     opa_input = {
         "input": {
             "action": action,
-            "name": request.hookContext.targetName,
-            "type": request.hookContext.targetType,
-            "properties": request.hookContext.targetModel.get("resourceProperties")
+            "hook": request.hookContext.hookTypeName,
+            "resource": {
+                "id": request.hookContext.targetLogicalId,
+                "name": request.hookContext.targetName,
+                "type": request.hookContext.targetType,
+                "properties": request.hookContext.targetModel.get("resourceProperties")
+            }
         }
     }
 
@@ -79,7 +83,7 @@ def pre_create_handler(
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
 
-    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
+    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
 
     return opa_query(request, "create", type_configuration.OpaUrl)
 
@@ -92,7 +96,7 @@ def pre_update_handler(
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
 
-    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
+    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
 
     return opa_query(request, "update", type_configuration.OpaUrl)
 
@@ -105,6 +109,6 @@ def pre_delete_handler(
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
 
-    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
+    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
 
     return opa_query(request, "delete", type_configuration.OpaUrl)

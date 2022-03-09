@@ -68,9 +68,13 @@ The OPA configured to receive requests from the CFN hook will have its input pro
 {
   "input": {
     "action": "create",
-    "name": "AWS::S3::Bucket",
-    "type": "AWS::S3::Bucket",
-    "properties": {"Tags": [{"Value": "Anders", "Key": "Owner"}]}
+    "hook": "Styra::OPA::Hook",
+    "resource": {
+      "id": "MyS3Bucket",
+      "name": "AWS::S3::Bucket",
+      "type": "AWS::S3::Bucket",
+      "properties": {"Tags": [{"Value": "Anders", "Key": "Owner"}]}
+    }
   }
 }
 ```
