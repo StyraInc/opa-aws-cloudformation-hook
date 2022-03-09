@@ -132,5 +132,10 @@ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-reso
 
 ## Open Questions
 
-* Authentication - if OPA is running in public, how do we provide credentials?
+* Authentication - if OPA is running in public, how do we provide credentials? Or may we assume
+  that the OPA is running in the same AWS environment and has been secured by other means, like
+  via network policy, etc?
 * Should we allow configuration of the expected response, i.e. "allow" vs. "deny"?
+* Working with existing resources (like only allow resource X if resource Y does not exist). The
+  libraries available for Java and Python can easily use the AWS SDK to call out to the AWS API,
+  but we don't have a good story for that in Rego currently.
