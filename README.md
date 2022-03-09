@@ -60,6 +60,30 @@ Or update the stack:
 aws cloudformation update-stack --stack-name cfn-s3 --template-body file://templates/s3.yaml
 ```
 
+## Rego Policy
+
+The OPA configured to receive requests from the CFN hook will have its input provided in this format:
+
+```json
+{
+  "input": {
+    "action": "create",
+    "name": "AWS::S3::Bucket",
+    "type": "AWS::S3::Bucket",
+    "properties": {"Tags": [{"Value": "Anders", "Key": "Owner"}]}
+  }
+}
+```
+
+Some notes on the above format:
+* The "action" is either "create", "update" or "delete"
+* I'm not sure whether "name" and "type" ever differs, but it seems like a good idea to provide both
+* The properties are exactly as defined in the template - no generated or default values
+
+The hook is currently hardcoded to deal with "deny" style policy responses, i.e. a **set** of messages.
+If the set (as represented by a JSON array) is empty, the request is approved. If the set has any entries,
+the request is denied, and the messages returned are logged to CloudWatch at error level.
+
 ## Logs
 
 Any logs emitted from the Python hook can be found under CloudWatch in your AWS account.
