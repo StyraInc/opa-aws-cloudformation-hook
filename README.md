@@ -88,6 +88,35 @@ The hook is currently hardcoded to deal with "deny" style policy responses, i.e.
 If the set (as represented by a JSON array) is empty, the request is approved. If the set has any entries,
 the request is denied, and the messages returned are logged to CloudWatch at error level.
 
+### Example Policy
+
+Example policy to ensure that an S3 bucket has an access control policy, and that policy is set to private:
+
+```rego
+package policy
+
+import future.keywords
+
+deny[msg] {
+    input.action in {"create", "update"}
+    input.resource.type == "AWS::S3::Bucket"
+    
+    not input.resource.properties.AccessControl
+    
+    msg := sprintf("S3 bucket %s does not specify AccessControl attribute", [input.resource.id])
+}
+
+deny[msg] {
+    input.action in {"create", "update"}
+    input.resource.type == "AWS::S3::Bucket"
+    
+    access_control := input.resource.properties.AccessControl
+    access_control != "Private"
+    
+    msg := sprintf("S3 bucket %s AccessControl attribute set to a non-private value: %s", [input.resource.id, access_control])
+}
+```
+
 ## Logs
 
 Any logs emitted from the Python hook can be found under CloudWatch in your AWS account.
@@ -99,3 +128,9 @@ https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook
 
 To see all attributes an object (like say, and S3 bucket) may have, consult the AWS resource type ref:
 https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
+
+
+## Open Questions
+
+* Authentication - if OPA is running in public, how do we provide credentials?
+* Should we allow configuration of the expected response, i.e. "allow" vs. "deny"?
