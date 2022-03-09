@@ -92,3 +92,6 @@ Any logs emitted from the Python hook can be found under CloudWatch in your AWS 
 
 See docs on registering the hook here:
 https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/registering-hook-python.html
+
+To see all attributes an object (like say, and S3 bucket) may have, consult the AWS resource type ref:
+https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html
