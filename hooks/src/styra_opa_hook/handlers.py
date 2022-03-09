@@ -1,3 +1,5 @@
+"""Handlers for delegating AWS Cloudformation hooks to OPA"""
+
 import logging
 from typing import Any, MutableMapping, Optional
 
@@ -5,13 +7,11 @@ import requests
 
 from cloudformation_cli_python_lib import (
     BaseHookHandlerRequest,
-    HandlerErrorCode,
     Hook,
     HookInvocationPoint,
     OperationStatus,
     ProgressEvent,
     SessionProxy,
-    exceptions,
 )
 
 from .models import HookHandlerRequest, TypeConfigurationModel
@@ -25,39 +25,30 @@ TYPE_NAME = "Styra::OPA::Hook"
 hook = Hook(TYPE_NAME, TypeConfigurationModel)
 test_entrypoint = hook.test_entrypoint
 
+def opa_query(request: HookHandlerRequest, action: str, url: str) -> ProgressEvent:
+    """Query OPA and return a ProgressEvent based on the decision"""
 
-@hook.handler(HookInvocationPoint.CREATE_PRE_PROVISION)
-def pre_create_handler(
-        session: Optional[SessionProxy],
-        request: HookHandlerRequest,
-        callback_context: MutableMapping[str, Any],
-        type_configuration: TypeConfigurationModel
-) -> ProgressEvent:
-    target_name = request.hookContext.targetName
-    target_model = request.hookContext.targetModel
     progress: ProgressEvent = ProgressEvent(
         status=OperationStatus.IN_PROGRESS
     )
 
-    LOG.info("Internal testing hook triggered for target: " + target_name)
-
-    resource_properties = target_model.get("resourceProperties")
-    LOG.info(resource_properties)
-
-    input = {
+    opa_input = {
         "input": {
-            "target_name": target_name,
-            "target_model": target_model,
-            "properties": resource_properties
+            "action": action,
+            "name": request.hookContext.targetName,
+            "type": request.hookContext.targetType,
+            "properties": request.hookContext.targetModel.get("resourceProperties")
         }
     }
 
-    r = requests.post(type_configuration.OpaUrl, json=input)
+    try:
+        resp = requests.post(url, json=opa_input)
+    except requests.ConnectionError:
+        LOG.error("Failed connecting to OPA at %s", url)
+        return OperationStatus.FAILED
 
-    if r.status_code == 200:
-        LOG.info("Response status == 200")
-        body = r.json()
-        LOG.info(body)
+    if resp.status_code == 200:
+        body = resp.json()
         if not "result" in body:
             LOG.error("OPA returned empty/undefined result")
             progress.status = OperationStatus.FAILED
@@ -67,18 +58,32 @@ def pre_create_handler(
                 # deny style rule, so empty result == success
                 progress.status = OperationStatus.SUCCESS
             else:
-                LOG.error(result)
+                message = " | ".join(result)
+                LOG.info("OPA denied the request with message: %s", message)
                 progress.status = OperationStatus.FAILED
-                progress.message = " | ".join(result)
-        
+                progress.message = message
+
     else:
-        LOG.error("Error:" + r.status_code)
-        LOG.error(r.json())
+        LOG.error("OPA returned status code: %d", resp.status_code)
+        LOG.error(resp.json())
         progress.status = OperationStatus.FAILED
 
     return progress
 
+# pylint: disable=unused-argument,missing-function-docstring
+@hook.handler(HookInvocationPoint.CREATE_PRE_PROVISION)
+def pre_create_handler(
+        session: Optional[SessionProxy],
+        request: HookHandlerRequest,
+        callback_context: MutableMapping[str, Any],
+        type_configuration: TypeConfigurationModel
+) -> ProgressEvent:
 
+    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
+
+    return opa_query(request, "create", type_configuration.OpaUrl)
+
+# pylint: disable=unused-argument,missing-function-docstring
 @hook.handler(HookInvocationPoint.UPDATE_PRE_PROVISION)
 def pre_update_handler(
         session: Optional[SessionProxy],
@@ -86,31 +91,12 @@ def pre_update_handler(
         callback_context: MutableMapping[str, Any],
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
-    target_model = request.hookContext.targetModel
-    progress: ProgressEvent = ProgressEvent(
-        status=OperationStatus.IN_PROGRESS
-    )
-    # TODO: put code here
 
-    # Example:
-    try:
-        # A Hook that does not allow a resource's encryption algorithm to be modified
+    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
 
-        # Reading the Resource Hook's target current properties and previous properties
-        resource_properties = target_model.get("resourceProperties")
-        previous_properties = target_model.get("previousResourceProperties")
+    return opa_query(request, "update", type_configuration.OpaUrl)
 
-        if resource_properties.get("encryptionAlgorithm") != previous_properties.get("encryptionAlgorithm"):
-            progress.status = OperationStatus.FAILED
-            progress.message = "Encryption algorithm can not be changed"
-        else:
-            progress.status = OperationStatus.SUCCESS
-    except TypeError as e:
-        progress = ProgressEvent.failed(HandlerErrorCode.InternalFailure, f"was not expecting type {e}")
-
-    return progress
-
-
+# pylint: disable=unused-argument,missing-function-docstring
 @hook.handler(HookInvocationPoint.DELETE_PRE_PROVISION)
 def pre_delete_handler(
         session: Optional[SessionProxy],
@@ -118,7 +104,7 @@ def pre_delete_handler(
         callback_context: MutableMapping[str, Any],
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
-    # TODO: put code here
-    return ProgressEvent(
-        status=OperationStatus.SUCCESS
-    )
+
+    LOG.info("Hook triggered for target: %s", request.hookContext.targetName)
+
+    return opa_query(request, "delete", type_configuration.OpaUrl)
