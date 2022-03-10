@@ -1,10 +1,17 @@
 {
     "properties": {
-        "OpaUrl": {
+        "opaUrl": {
             "description": "URL pointing to OPA for policy decisions",
+            "type": "string"
+        },
+        "opaAuthTokenSecret": {
+            "description": "ARN referencing a secret containing a token to use for authenticating against OPA (secret key must be 'opa_auth_token')",
             "type": "string"
         }
     },
+    "required": [
+        "OpaUrl"
+    ],
     "additionalProperties": false,
     "definitions": {},
     "typeName": "Styra::OPA::Hook"

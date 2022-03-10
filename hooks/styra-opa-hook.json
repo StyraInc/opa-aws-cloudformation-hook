@@ -5,11 +5,16 @@
     "documentationUrl": "https://github.com/aws-cloudformation/example-sse-hook/blob/master/README.md",
     "typeConfiguration": {
         "properties": {
-            "OpaUrl": {
+            "opaUrl": {
                 "description": "URL pointing to OPA for policy decisions",
+                "type": "string"
+            },
+            "opaAuthTokenSecret": {
+                "description": "ARN referencing a secret containing a token to use for authenticating against OPA (secret key must be 'opa_auth_token')",
                 "type": "string"
             }
         },
+        "required": ["opaUrl"],
         "additionalProperties": false
     },
     "required": [],
@@ -19,21 +24,27 @@
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy"
             ],
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "preUpdate": {
             "targetNames": [
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy"
             ],
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         },
         "preDelete": {
             "targetNames": [
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy"
             ],
-            "permissions": []
+            "permissions": [
+                "secretsmanager:GetSecretValue"
+            ]
         }
     },
     "additionalProperties": false

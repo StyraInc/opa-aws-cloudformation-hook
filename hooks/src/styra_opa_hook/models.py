@@ -34,7 +34,8 @@ class HookHandlerRequest(BaseHookHandlerRequest):
 
 @dataclass
 class TypeConfigurationModel(BaseModel):
-    OpaUrl: Optional[str]
+    opaUrl: Optional[str]
+    opaAuthTokenSecret: Optional[str]
 
     @classmethod
     def _deserialize(
@@ -44,7 +45,8 @@ class TypeConfigurationModel(BaseModel):
         if not json_data:
             return None
         return cls(
-            OpaUrl=json_data.get("OpaUrl"),
+            opaUrl=json_data.get("opaUrl"),
+            opaAuthTokenSecret=json_data.get("opaAuthTokenSecret"),
         )
 
 

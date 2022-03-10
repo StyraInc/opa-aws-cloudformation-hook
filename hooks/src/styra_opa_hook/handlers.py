@@ -3,10 +3,10 @@
 import logging
 from typing import Any, MutableMapping, Optional
 
+from botocore.exceptions import ClientError
 import requests
 
 from cloudformation_cli_python_lib import (
-    BaseHookHandlerRequest,
     Hook,
     HookInvocationPoint,
     OperationStatus,
@@ -25,7 +25,30 @@ TYPE_NAME = "Styra::OPA::Hook"
 hook = Hook(TYPE_NAME, TypeConfigurationModel)
 test_entrypoint = hook.test_entrypoint
 
-def opa_query(request: HookHandlerRequest, action: str, url: str) -> ProgressEvent:
+def get_secret(name: str, session: Optional[SessionProxy]) -> str:
+    """Get the (optional) secret to use as bearer token for authenticating against OPA"""
+
+    client = session.client("secretsmanager")
+
+    try:
+        resp = client.get_secret_value(SecretId=name)
+    # pylint: disable=invalid-name
+    except ClientError as e:
+        LOG.error("Failed fetching secret %s", name)
+        LOG.error(e)
+        raise e
+
+    if 'SecretString' in resp:
+        return resp['SecretString']
+
+    raise Exception("SecretString not found in secret")
+
+def opa_query(
+        request: HookHandlerRequest,
+        session: Optional[SessionProxy],
+        type_configuration: TypeConfigurationModel,
+        action: str,
+) -> ProgressEvent:
     """Query OPA and return a ProgressEvent based on the decision"""
 
     progress: ProgressEvent = ProgressEvent(
@@ -45,10 +68,18 @@ def opa_query(request: HookHandlerRequest, action: str, url: str) -> ProgressEve
         }
     }
 
+    headers = {}
+    secret = type_configuration.opaAuthTokenSecret
+    if secret is not None and secret != "":
+        token = get_secret(type_configuration.opaAuthTokenSecret, session)
+        headers = {"Authorization": f"Bearer {token}"}
+
     try:
-        resp = requests.post(url, json=opa_input)
+        resp = requests.post(type_configuration.opaUrl, json=opa_input, headers=headers)
     except requests.ConnectionError:
-        LOG.error("Failed connecting to OPA at %s", url)
+        LOG.error("Failed connecting to OPA at %s", type_configuration.opaUrl)
+
+        # TODO wrong return type
         return OperationStatus.FAILED
 
     if resp.status_code == 200:
@@ -76,39 +107,20 @@ def opa_query(request: HookHandlerRequest, action: str, url: str) -> ProgressEve
 
 # pylint: disable=unused-argument,missing-function-docstring
 @hook.handler(HookInvocationPoint.CREATE_PRE_PROVISION)
-def pre_create_handler(
+@hook.handler(HookInvocationPoint.UPDATE_PRE_PROVISION)
+@hook.handler(HookInvocationPoint.DELETE_PRE_PROVISION)
+def pre_handler(
         session: Optional[SessionProxy],
         request: HookHandlerRequest,
         callback_context: MutableMapping[str, Any],
         type_configuration: TypeConfigurationModel
 ) -> ProgressEvent:
 
-    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
+    LOG.info("Hook triggered for target %s %s",
+        request.hookContext.targetName,
+        request.hookContext.targetLogicalId
+    )
 
-    return opa_query(request, "create", type_configuration.OpaUrl)
+    action = request.hookContext.invocationPoint[0:6]
 
-# pylint: disable=unused-argument,missing-function-docstring
-@hook.handler(HookInvocationPoint.UPDATE_PRE_PROVISION)
-def pre_update_handler(
-        session: Optional[SessionProxy],
-        request: BaseHookHandlerRequest,
-        callback_context: MutableMapping[str, Any],
-        type_configuration: TypeConfigurationModel
-) -> ProgressEvent:
-
-    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
-
-    return opa_query(request, "update", type_configuration.OpaUrl)
-
-# pylint: disable=unused-argument,missing-function-docstring
-@hook.handler(HookInvocationPoint.DELETE_PRE_PROVISION)
-def pre_delete_handler(
-        session: Optional[SessionProxy],
-        request: BaseHookHandlerRequest,
-        callback_context: MutableMapping[str, Any],
-        type_configuration: TypeConfigurationModel
-) -> ProgressEvent:
-
-    LOG.info("Hook triggered for target %s %s", request.hookContext.targetName, request.hookContext.targetLogicalId)
-
-    return opa_query(request, "delete", type_configuration.OpaUrl)
+    return opa_query(request, session, type_configuration, action)

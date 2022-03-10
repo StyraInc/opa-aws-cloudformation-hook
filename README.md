@@ -18,7 +18,7 @@ from the response and store it in an environment variable:
 export HOOK_TYPE_ARN="arn:aws:cloudformation:eu-north-1:677200501247:type/hook/Styra-OPA-Hook"
 ```
 
-Next, set the AWS region and the URL to use for calling OPA. I'm using [ngrok](https://ngrok.com/) 
+Next, set the AWS region and the URL to use for calling OPA. I'm using [ngrok](https://ngrok.com/)
 for exposing an OPA running locally to the public, but there are obviously many ways to accomplish this.
 
 ```shell
@@ -26,11 +26,16 @@ export AWS_REGION="eu-north-1"
 export OPA_URL="http://206d-46-182-202-220.ngrok.io/v1/data/policy/deny"
 ```
 
-With the configuration variables set, push the configuration to AWS:
+Optionally, if using bearer token to authenticate against OPA, provide ARN pointing to the secret containing the token:
+```shell
+export OPA_AUTH_TOKEN_SECRET="arn:aws:secretsmanager:eu-north-1:677200501247:secret:opa-cfn-token-l26bHK"
+```
+
+With the configuration variables set, push the configuration to AWS (remove `opaAuthTokenSecret` if you don't intend to use it):
 
 ```shell
 aws cloudformation --region "$AWS_REGION" set-type-configuration \
-  --configuration "{\"CloudFormationConfiguration\":{\"HookConfiguration\":{\"TargetStacks\":\"ALL\",\"FailureMode\":\"FAIL\",\"Properties\":{\"OpaUrl\": \"$OPA_URL\"}}}}" \
+  --configuration "{\"CloudFormationConfiguration\":{\"HookConfiguration\":{\"TargetStacks\":\"ALL\",\"FailureMode\":\"FAIL\",\"Properties\":{\"opaUrl\": \"$OPA_URL\",\"opaAuthTokenSecret\":\"$OPA_AUTH_TOKEN_SECRET\"}}}}" \
   --type-arn $HOOK_TYPE_ARN
 ```
 
@@ -67,7 +72,7 @@ The OPA configured to receive requests from the CFN hook will have its input pro
 ```json
 {
   "input": {
-    "action": "create",
+    "action": "CREATE",
     "hook": "Styra::OPA::Hook",
     "resource": {
       "id": "MyS3Bucket",
@@ -80,7 +85,7 @@ The OPA configured to receive requests from the CFN hook will have its input pro
 ```
 
 Some notes on the above format:
-* The "action" is either "create", "update" or "delete"
+* The "action" is either "CREATE", "UPDATE" or "DELETE"
 * I'm not sure whether "name" and "type" ever differs, but it seems like a good idea to provide both
 * The properties are exactly as defined in the template - no generated or default values
 
@@ -98,21 +103,21 @@ package policy
 import future.keywords
 
 deny[msg] {
-    input.action in {"create", "update"}
+    input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-    
+
     not input.resource.properties.AccessControl
-    
+
     msg := sprintf("S3 bucket %s does not specify AccessControl attribute", [input.resource.id])
 }
 
 deny[msg] {
-    input.action in {"create", "update"}
+    input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-    
+
     access_control := input.resource.properties.AccessControl
     access_control != "Private"
-    
+
     msg := sprintf("S3 bucket %s AccessControl attribute set to a non-private value: %s", [input.resource.id, access_control])
 }
 ```
@@ -120,6 +125,56 @@ deny[msg] {
 ## Logs
 
 Any logs emitted from the Python hook can be found under CloudWatch in your AWS account.
+
+## Authentication and Permissions
+
+If configured to use a bearer token for authenticating against OPA, the hook will try to fetch the token from the
+secret provided in the `opaAuthTokenSecret` (ARN) configuration attribute. Note that the token should be provided
+as a plain string in the secret (i.e. the `SecretString`) and not wrapped in a JSON object.
+
+In order to fetch the token, the hook will need to be permitted to perform the `secretsmanager:GetSecretValue`
+operation. Note that the hook will **only** read the secret provided by `opaAuthTokenSecret`, but it's recommended
+to limit the `HookTypePolicy` on the IAM role to the specific secret accessed, i.e. the same ARN provided in
+`opaAuthTokenSecret`. If you aren't planning to use bearer tokens for authentication, you may remove the permission entirely.
+
+Example `HookTypePolicy` to allow the hook access to a specific secret:
+
+```json
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": "secretsmanager:GetSecretValue",
+            "Resource": "arn:aws:secretsmanager:eu-north-1:677200501247:secret:opa-cfn-token-l26bHK"
+        }
+    ]
+}
+```
+
+### OPA Authentication Configuration
+
+OPA may now be configured to require authentication to access the REST API, as described in the OPA
+[documentation](https://www.openpolicyagent.org/docs/latest/security/#authentication-and-authorization).
+
+A simple authz policy for checking the bearer token might look something like this:
+
+```rego
+package system.authz
+
+default allow = false
+
+allow {
+    input.identity == "my_secret_token"
+}
+```
+
+Remember to pass the appropriate flags to `opa run` to enable authentication / authorization:
+
+```shell
+opa run --server --authentication=token --authorization=basic .
+```
 
 ## Docs
 
