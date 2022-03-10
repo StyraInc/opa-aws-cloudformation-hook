@@ -135,9 +135,7 @@ as a plain string in the secret (i.e. the `SecretString`) and not wrapped in a J
 In order to fetch the token, the hook will need to be permitted to perform the `secretsmanager:GetSecretValue`
 operation. Note that the hook will **only** read the secret provided by `opaAuthTokenSecret`, but it's recommended
 to limit the `HookTypePolicy` on the IAM role to the specific secret accessed, i.e. the same ARN provided in
-`opaAuthTokenSecret`. If you aren't planning to use bearer tokens for authentication, you may remove the permission entirely.
-
-Example `HookTypePolicy` to allow the hook access to a specific secret:
+`opaAuthTokenSecret`. Example `HookTypePolicy` to allow the hook access to a specific secret:
 
 ```json
 {
@@ -152,6 +150,8 @@ Example `HookTypePolicy` to allow the hook access to a specific secret:
     ]
 }
 ```
+
+ If you aren't planning to use bearer tokens for authentication, you may remove the permission entirely.
 
 ### OPA Authentication Configuration
 
@@ -187,9 +187,6 @@ https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-reso
 
 ## Open Questions
 
-* Authentication - if OPA is running in public, how do we provide credentials? Or may we assume
-  that the OPA is running in the same AWS environment and has been secured by other means, like
-  via network policy, etc?
 * Should we allow configuration of the expected response, i.e. "allow" vs. "deny"?
 * Working with existing resources (like only allow resource X if resource Y does not exist). The
   libraries available for Java and Python can easily use the AWS SDK to call out to the AWS API,
