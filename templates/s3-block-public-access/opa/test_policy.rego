@@ -2,6 +2,7 @@ package policy.tests
 
 import future.keywords
 
+import data.policy.deny
 
 mock_create := {
     "action": "CREATE",
@@ -19,32 +20,32 @@ with_properties(obj) = {"resource": {"properties": obj}}
 test_deny_if_not_public_access_blocked {
 	inp := object.union(mock_create, with_properties({
         "PublicAccessBlockConfiguration": {
-        	"BlockPublicAcls": false,
-            "BlockPublicPolicy": true,
-            "IgnorePublicAcls": true,
-            "RestrictPublicBuckets": false        
+        	"BlockPublicAcls": "false",
+            "BlockPublicPolicy": "true",
+            "IgnorePublicAcls": "true",
+            "RestrictPublicBuckets": "false",
         }
     }))
-    
+
     deny["public access not blocked for bucket MyS3Bucket"] with input as inp
 }
 
 test_allow_if_public_access_blocked {
 	inp := object.union(mock_create, with_properties({
         "PublicAccessBlockConfiguration": {
-        	"BlockPublicAcls": true,
-            "BlockPublicPolicy": true,
-            "IgnorePublicAcls": true,
-            "RestrictPublicBuckets": true        
+        	"BlockPublicAcls": "true",
+            "BlockPublicPolicy": "true",
+            "IgnorePublicAcls": "true",
+            "RestrictPublicBuckets": "true",
         }
     }))
-    
+
     count(deny) == 0 with input as inp
 }
 
-test_allow_if_excluded_suffix {
+test_allow_if_excluded_prefix {
 	count(deny) == 0 with input as object.union(mock_create, with_properties({
-    	"BucketName": "this-bucket-is-public"
+    	"BucketName": "excluded-bucket"
     }))
 }
 
