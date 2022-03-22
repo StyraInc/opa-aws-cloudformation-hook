@@ -22,7 +22,9 @@
         "preCreate": {
             "targetNames": [
                 "AWS::S3::Bucket",
-                "AWS::S3::BucketPolicy"
+                "AWS::S3::BucketPolicy",
+                "AWS::EC2::SecurityGroup",
+                "AWS::EC2::SecurityGroupIngress"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -31,7 +33,9 @@
         "preUpdate": {
             "targetNames": [
                 "AWS::S3::Bucket",
-                "AWS::S3::BucketPolicy"
+                "AWS::S3::BucketPolicy",
+                "AWS::EC2::SecurityGroup",
+                "AWS::EC2::SecurityGroupIngress"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -40,7 +44,9 @@
         "preDelete": {
             "targetNames": [
                 "AWS::S3::Bucket",
-                "AWS::S3::BucketPolicy"
+                "AWS::S3::BucketPolicy",
+                "AWS::EC2::SecurityGroup",
+                "AWS::EC2::SecurityGroupIngress"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
