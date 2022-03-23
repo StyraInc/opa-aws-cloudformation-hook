@@ -1,35 +1,30 @@
-package policy
+package aws.s3.bucket_logging
 
 import future.keywords
 
-s3BucketName := object.get(input.resource.properties, "BucketName", "")
-
-expectedLoggingPrefix = concat("-", ["s3-logs", s3BucketName]) {
-	s3BucketName != ""
-}
-
-expectedLoggingPrefix = "s3-logs" {
-	s3BucketName == ""
-}
-
-expectedDestinationBucketName := "my-logging-bucket"
-
-bucketLoggingPrefix := object.get(input.resource.properties, ["LoggingConfiguration", "LogFilePrefix"], "<undefined>")
-bucketLoggingDestination := object.get(input.resource.properties, ["LoggingConfiguration", "DestinationBucketName"], "<undefined>")
-
 deny[msg] {
     input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-
-    bucketLoggingPrefix != expectedLoggingPrefix
-
+	not valid_logging_prefix
     msg := sprintf("logging prefix is not set correctly for bucket: %s", [input.resource.id])
 }
+
+valid_logging_prefix {
+    input.resource.properties.LoggingConfiguration.LogFilePrefix == concat("-", ["s3-logs", input.resource.properties.BucketName])
+}
+
+valid_logging_prefix {
+	not input.resource.properties.BucketName
+    input.resource.properties.LoggingConfiguration.LogFilePrefix == "s3-logs"
+}
+
 deny[msg] {
     input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-
-    bucketLoggingDestination != expectedDestinationBucketName
-
+	not valid_logging_destination
     msg := sprintf("logging destination bucket is not correct: %s", [input.resource.id])
+}
+
+valid_logging_destination {
+	input.resource.properties.LoggingConfiguration.DestinationBucketName == "my-logging-bucket"
 }

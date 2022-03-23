@@ -1,32 +1,25 @@
-package policy
+package aws.s3.bucket_encryption
 
 import future.keywords
 
-BucketEncryption := object.get(input.resource.properties, "BucketEncryption", "<undefined>")
-SSEAlgorithm := object.get(input.resource.properties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault, "SSEAlgorithm", "<undefined>")
-
-bucket_encryption_unset {
-    BucketEncryption == "<undefined>"
-}
-
-bucket_encryption_unset {
-    BucketEncryption == {}
-}
-
 deny[msg] {
     input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-
-    bucket_encryption_unset
-
+    not valid_bucket_encryption
     msg := sprintf("bucket encryption is not enabled for bucket: %s", [input.resource.id])
 }
 
+valid_bucket_encryption {
+	input.resource.properties.BucketEncryption != {}
+}
+
 deny[msg] {
     input.action in {"CREATE", "UPDATE"}
     input.resource.type == "AWS::S3::Bucket"
-
-    SSEAlgorithm != "aws:kms"
-
+    not valid_sse_algo
     msg := sprintf("encryption not set to aws:kms for bucket: %s", [input.resource.id])
+}
+
+valid_sse_algo {
+	input.resource.properties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.SSEAlgorithm == "aws:kms"
 }

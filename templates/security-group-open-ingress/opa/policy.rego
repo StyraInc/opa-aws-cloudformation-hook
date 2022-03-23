@@ -1,4 +1,4 @@
-package policy
+package aws.sg.open_ingress
 
 import future.keywords
 
