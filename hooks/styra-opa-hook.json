@@ -1,8 +1,8 @@
 {
     "typeName": "Styra::OPA::Hook",
-    "description": "Example resource S3 bucket verification hook",
-    "sourceUrl": "https://github.com/aws-cloudformation/example-sse-hook",
-    "documentationUrl": "https://github.com/aws-cloudformation/example-sse-hook/blob/master/README.md",
+    "description": "Example hook used to call out to Open Policy Agent",
+    "sourceUrl": "https://www.openpolicyagent.org/docs/latest/",
+    "documentationUrl": "https://www.openpolicyagent.org/docs/latest/",
     "typeConfiguration": {
         "properties": {
             "opaUrl": {
@@ -24,7 +24,9 @@
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy",
                 "AWS::EC2::SecurityGroup",
-                "AWS::EC2::SecurityGroupIngress"
+                "AWS::EC2::SecurityGroupIngress",
+                "AWS::IAM::Role",
+                "AWS::IAM::User"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -35,7 +37,9 @@
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy",
                 "AWS::EC2::SecurityGroup",
-                "AWS::EC2::SecurityGroupIngress"
+                "AWS::EC2::SecurityGroupIngress",
+                "AWS::IAM::Role",
+                "AWS::IAM::User"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -46,7 +50,9 @@
                 "AWS::S3::Bucket",
                 "AWS::S3::BucketPolicy",
                 "AWS::EC2::SecurityGroup",
-                "AWS::EC2::SecurityGroupIngress"
+                "AWS::EC2::SecurityGroupIngress",
+                "AWS::IAM::Role",
+                "AWS::IAM::User"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"

@@ -1,0 +1,6 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  IAMUserTest:
+    Type: AWS::IAM::User
+    Properties:
+      UserName: !Sub 'excluded-cfn-hooks-${AWS::StackName}-${AWS::AccountId}'
