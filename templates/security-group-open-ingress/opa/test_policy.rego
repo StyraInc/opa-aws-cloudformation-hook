@@ -1,3 +1,8 @@
+package policy.tests
+
+import future.keywords
+
+import data.policy.deny
 
 mock_create := {
     "action": "CREATE",
@@ -21,7 +26,7 @@ test_deny_if_security_group_allows_all_destinations {
             }
         ]
     }))
-    
+
     deny["Security Group cannot contain rules allow all destinations (0.0.0.0/0 or ::/0): SecurityGroup"] with input as inp
 }
 

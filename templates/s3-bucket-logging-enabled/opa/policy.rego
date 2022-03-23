@@ -4,14 +4,12 @@ import future.keywords
 
 s3BucketName := object.get(input.resource.properties, "BucketName", "")
 
-expectedLoggingPrefix = name {
+expectedLoggingPrefix = concat("-", ["s3-logs", s3BucketName]) {
 	s3BucketName != ""
-	name = concat("-", ["s3-logs", s3BucketName])
 }
 
-expectedLoggingPrefix = name {
+expectedLoggingPrefix = "s3-logs" {
 	s3BucketName == ""
-	name = "s3-logs"
 }
 
 expectedDestinationBucketName := "my-logging-bucket"
