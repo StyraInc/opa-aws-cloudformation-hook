@@ -1,34 +1,46 @@
-package policy.iamPrincipalBoundary
+package aws.iam
 
 import future.keywords
 
-UserName := object.get(input.resource.properties, "UserName", "<undefined>")
-RoleName := object.get(input.resource.properties, "RoleName", "<undefined>")
-PermissionsBoundary := object.get(input.resource.properties, "PermissionsBoundary", "<undefined>")
-
 excludedPrincipalPrefixes := ["excluded", "iam-excluded", "test-excluded-user"]
-iamPrincipalBoundaryArn := "arn:aws:iam::555555555555:policy/s3_deny_permissions_boundary"
-
-
-isPrincipalExcluded {
-    some prefix in excludedPrincipalPrefixes
-    startswith(UserName, prefix)
-}
-isPrincipalExcluded {
-    some prefix in excludedPrincipalPrefixes
-    startswith(RoleName, prefix)
-}
 
 deny[msg] {
-    not isPrincipalExcluded
-    PermissionsBoundary != iamPrincipalBoundaryArn
-
-    msg := sprintf("PermissionsBoundary %s is not allowed for %s", [PermissionsBoundary, input.resource.id])
-}
-
-deny[msg] {
-    not isPrincipalExcluded
-    PermissionsBoundary == "<undefined>"
+    input.action in {"CREATE", "UPDATE"}
+    iam_resource_type
+    not excluded_principal_name
+    not permission_boundary_exists
 
     msg := sprintf("PermissionsBoundary is not set for %s", [input.resource.id])
+}
+excluded_principal_name {
+    name := input.resource.properties.UserName
+    some prefix in excludedPrincipalPrefixes
+    startswith(name, prefix)
+}
+excluded_principal_name {
+    name := input.resource.properties.RoleName
+    some prefix in excludedPrincipalPrefixes
+    startswith(name, prefix)
+}
+permission_boundary_exists {
+    input.resource.properties.PermissionsBoundary
+}
+
+deny[msg] {
+    input.action in {"CREATE", "UPDATE"}
+    iam_resource_type
+    not excluded_principal_name
+    permission_boundary_exists
+    not valid_permission_boundary
+
+    msg := sprintf("PermissionsBoundary %s is not allowed for %s", [input.resource.properties.PermissionsBoundary, input.resource.id])
+}
+iam_resource_type {
+    input.resource.type == "AWS::IAM::Role"
+}
+iam_resource_type {
+    input.resource.type == "AWS::IAM::User"
+}
+valid_permission_boundary {
+    input.resource.properties.PermissionsBoundary == "arn:aws:iam::555555555555:policy/s3_deny_permissions_boundary"
 }

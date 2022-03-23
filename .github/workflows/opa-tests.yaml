@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        version: [latest, 0.38.x, 0.37.x]
+        version: [latest, 0.38.x]
     steps:
     - name: Check out repository code
       uses: actions/checkout@v2

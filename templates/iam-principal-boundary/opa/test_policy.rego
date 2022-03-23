@@ -1,5 +1,9 @@
-package policy.iamPrincipalBoundary
-        
+package aws.iam.tests
+
+import future.keywords
+
+import data.aws.iam.deny
+
 mock_create := {
     "action": "CREATE",
     "hook": "Styra::OPA::Hook",

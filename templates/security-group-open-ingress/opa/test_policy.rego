@@ -1,8 +1,8 @@
-package policy.tests
+package aws.sg.open_ingress.tests
 
 import future.keywords
 
-import data.policy.deny
+import data.aws.sg.open_ingress.deny
 
 mock_create := {
     "action": "CREATE",

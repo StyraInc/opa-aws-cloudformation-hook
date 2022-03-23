@@ -1,8 +1,8 @@
-package policy.tests
+package aws.s3.block_public_access.tests
 
 import future.keywords
 
-import data.policy.deny
+import data.aws.s3.block_public_access.deny
 
 mock_create := {
     "action": "CREATE",

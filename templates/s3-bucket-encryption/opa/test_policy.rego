@@ -1,8 +1,8 @@
-package policy.tests
+package aws.s3.bucket_encryption.tests
 
 import future.keywords
 
-import data.policy.deny
+import data.aws.s3.bucket_encryption.deny
 
 mock_create := {
     "action": "CREATE",
@@ -24,8 +24,21 @@ test_deny_if_bucket_encryption_not_set {
 
     deny["bucket encryption is not enabled for bucket: MyS3Bucket"] with input as inp
 }
+test_deny_if_bucket_encryption_is_not_aws_kms {
+	inp := object.union(mock_create, with_properties({
+        "BucketEncryption": {
+        	"ServerSideEncryptionConfiguration": [
+                {"ServerSideEncryptionByDefault": {
+                    "SSEAlgorithm": "aws:invalid"
+                } }
+            ]
+        }
+    }))
 
-test_allow_if_public_access_blocked {
+    deny["encryption not set to aws:kms for bucket: MyS3Bucket"] with input as inp
+}
+
+test_allow_if_bucket_encryption_is_set {
 	inp := object.union(mock_create, with_properties({
         "BucketEncryption": {
         	"ServerSideEncryptionConfiguration": [
