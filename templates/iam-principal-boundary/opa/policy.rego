@@ -1,4 +1,4 @@
-package aws.iam
+package aws.iam.principal_boundary
 
 import future.keywords
 

@@ -1,8 +1,8 @@
-package aws.iam.tests
+package aws.iam.principal_boundary.tests
 
 import future.keywords
 
-import data.aws.iam.deny
+import data.aws.iam.principal_boundary.deny
 
 mock_create := {
     "action": "CREATE",
