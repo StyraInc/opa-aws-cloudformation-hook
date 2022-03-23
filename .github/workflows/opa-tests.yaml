@@ -1,0 +1,19 @@
+name: Test OPA Templates  
+on: [push]
+jobs:
+  Test-OPA-Templates:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [latest, 0.38.x, 0.37.x]
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Setup OPA
+      uses: open-policy-agent/setup-opa@v1
+      with:
+        version: ${{ matrix.version }} 
+
+    - name: Test OPA Templates
+      run: opa test templates/*/opa/*.rego -v
