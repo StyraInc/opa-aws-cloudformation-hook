@@ -2,6 +2,8 @@ package policy.tests
 
 import future.keywords
 
+import data.policy.deny
+
 mock_create := {
     "action": "CREATE",
     "hook": "Styra::OPA::Hook",
@@ -15,14 +17,11 @@ mock_create := {
 
 with_properties(obj) = {"resource": {"properties": obj}}
 
-# 1 fail if no encryption is set
-# 2 success with encryption 
-
 test_deny_if_bucket_encryption_not_set {
 	inp := object.union(mock_create, with_properties({
         "BucketEncryption": {}
     }))
-    
+
     deny["bucket encryption is not enabled for bucket: MyS3Bucket"] with input as inp
 }
 
@@ -33,10 +32,10 @@ test_allow_if_public_access_blocked {
                 {"ServerSideEncryptionByDefault": {
                     "SSEAlgorithm": "aws:kms"
                 } }
-            ]     
+            ]
         }
     }))
-    
+
     count(deny) == 0 with input as inp
 }
 
