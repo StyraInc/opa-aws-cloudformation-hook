@@ -57,7 +57,7 @@ violations["Missing input.action"] {
 # Helpers
 #
 
-document(component, type) = object.remove(data.aws[component][type], ["delete"]) {
+document(component, type) = data.aws[component][type] {
 	input.action != "DELETE"
 }
 
