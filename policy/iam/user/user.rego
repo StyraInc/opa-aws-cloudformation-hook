@@ -1,4 +1,4 @@
-package aws.iam.role
+package aws.iam.user
 
 import future.keywords
 
@@ -20,7 +20,7 @@ deny[msg] {
 }
 
 excluded_principal_name {
-    name := input.resource.properties.RoleName
+    name := input.resource.properties.UserName
     some prefix in excludedPrincipalPrefixes
     startswith(name, prefix)
 }

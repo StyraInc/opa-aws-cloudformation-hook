@@ -1,8 +1,8 @@
-package aws.sg.open_ingress.tests
+package aws.ec2.securitygroup_test
 
 import future.keywords
 
-import data.aws.sg.open_ingress.deny
+import data.aws.ec2.securitygroup.deny
 
 mock_create := {
     "action": "CREATE",

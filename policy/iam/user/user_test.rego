@@ -1,16 +1,16 @@
-package aws.iam.role_test
+package aws.iam.user_test
 
 import future.keywords
 
-import data.aws.iam.role.deny
+import data.aws.iam.user.deny
 
 mock_create := {
     "action": "CREATE",
     "hook": "Styra::OPA::Hook",
     "resource": {
         "id": "IAMRoleTest",
-        "name": "AWS::IAM::Role",
-        "type": "AWS::IAM::Role",
+        "name": "AWS::IAM::User",
+        "type": "AWS::IAM::User",
         "properties": {
          	"AssumeRolePolicyDocument": {
         		"Version": "2012-10-17",
@@ -49,9 +49,10 @@ test_allow_permission_boundary_included {
 
     count(deny) == 0 with input as inp
 }
-test_allow_role_name_excluded {
+
+test_allow_user_name_excluded {
 	inp := object.union(mock_create, with_properties({
-        "RoleName": "excluded-cfn-hooks-stack1-046693375555"
+        "UserName": "excluded-cfn-hooks-stack1-046693375555"
     }))
 
     count(deny) == 0 with input as inp
