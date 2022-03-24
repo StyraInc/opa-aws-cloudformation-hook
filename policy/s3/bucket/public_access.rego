@@ -1,11 +1,8 @@
-package aws.s3.block_public_access
+package aws.s3.bucket
 
 import future.keywords
 
 deny[msg] {
-    input.action in {"CREATE", "UPDATE"}
-    input.resource.type == "AWS::S3::Bucket"
-
     not bucket_excluded
     not public_access_blocked
 
@@ -13,9 +10,8 @@ deny[msg] {
 }
 
 bucket_excluded {
-    s3BucketName := input.resource.properties.BucketName
 	some prefix in {"excluded-", "baseline-"}
-	startswith(s3BucketName, prefix)
+	startswith(input.resource.properties.BucketName, prefix)
 }
 
 public_access_blocked {
