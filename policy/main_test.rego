@@ -2,6 +2,8 @@ package main_test
 
 import data.system.main
 
+import data.test_helpers.assert_equals
+
 test_simple_routing_deny {
 	inp := {"action": "CREATE", "resource": {"type": "AWS::S3::Bucket", "id": "foo"}}
 	aws := {"s3": {"bucket": {"deny": {"test violation"}}}}
@@ -42,13 +44,4 @@ test_input_validation {
 	main.violations["Missing input.resource"] with input as {}
     main.violations["Missing input.resource.id"] with input as {}
 	main.violations["Missing input.resource.type"] with input as {}
-}
-
-assert_equals(expected, result) {
-	expected == result
-}
-
-assert_equals(expected, result) = false {
-	expected != result
-	print("expected:", expected, "got:", result)
 }

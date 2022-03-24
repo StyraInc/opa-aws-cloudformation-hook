@@ -4,27 +4,22 @@ import future.keywords
 
 import data.aws.iam.role.deny
 
-mock_create := {
-    "action": "CREATE",
-    "hook": "Styra::OPA::Hook",
-    "resource": {
-        "id": "IAMRoleTest",
-        "name": "AWS::IAM::Role",
-        "type": "AWS::IAM::Role",
-        "properties": {
-         	"AssumeRolePolicyDocument": {
-        		"Version": "2012-10-17",
-            	"Statement": [{
-            		"Action": "sts:AssumeRole",
-                	"Effect": "Allow",
-                	"Principal": {
-                		"Service": "codepipeline.amazonaws.com"
-            }}]}
-        }
-    }
-}
+import data.test_helpers.assert_empty
+import data.test_helpers.create_with_properties
+import data.test_helpers.with_properties
 
-with_properties(obj) = {"resource": {"properties": obj}}
+mock_create := create_with_properties("AWS::IAM::Role", "IAMRoleTest", {
+    "AssumeRolePolicyDocument": {
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Action": "sts:AssumeRole",
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "codepipeline.amazonaws.com"
+            }
+        }]
+    }
+})
 
 test_deny_auto_generated_name_not_excluded {
 	inp := object.union(mock_create, with_properties({
@@ -36,9 +31,7 @@ test_deny_auto_generated_name_not_excluded {
 }
 
 test_deny_permission_boundary_not_set {
-	inp := mock_create
-
-    deny["PermissionsBoundary is not set for IAMRoleTest"] with input as inp
+    deny["PermissionsBoundary is not set for IAMRoleTest"] with input as mock_create
 }
 
 test_allow_permission_boundary_included {
@@ -47,12 +40,12 @@ test_allow_permission_boundary_included {
         "PermissionsBoundary": "arn:aws:iam::555555555555:policy/s3_deny_permissions_boundary"
     }))
 
-    count(deny) == 0 with input as inp
+    assert_empty(deny) with input as inp
 }
 test_allow_role_name_excluded {
 	inp := object.union(mock_create, with_properties({
         "RoleName": "excluded-cfn-hooks-stack1-046693375555"
     }))
 
-    count(deny) == 0 with input as inp
+    assert_empty(deny) with input as inp
 }
