@@ -1,8 +1,10 @@
 # METADATA
-# description: |
+# description: |
 #   Optional authorization policy to use for protecting the OPA REST API if
-#   exposed on a public endpoint. See the OPA docs on authN/authZ for more info:
-#   https://www.openpolicyagent.org/docs/latest/security/#authentication-and-authorization
+#   exposed on a public endpoint.
+# related_resources:
+# - description: OPA documentation on authentication and authorization
+#   ref: https://www.openpolicyagent.org/docs/latest/security/#authentication-and-authorization
 #
 package system.authz
 
