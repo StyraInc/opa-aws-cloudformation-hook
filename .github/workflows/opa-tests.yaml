@@ -1,4 +1,4 @@
-name: Test OPA Templates  
+name: Test OPA Templates
 on: [push]
 jobs:
   Test-OPA-Templates:
@@ -13,7 +13,7 @@ jobs:
     - name: Setup OPA
       uses: open-policy-agent/setup-opa@v1
       with:
-        version: ${{ matrix.version }} 
+        version: ${{ matrix.version }}
 
     - name: Test OPA Templates
-      run: opa test templates/*/opa/*.rego -v
+      run: opa test -v policy/
