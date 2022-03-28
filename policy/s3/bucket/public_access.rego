@@ -3,10 +3,10 @@ package aws.s3.bucket
 import future.keywords
 
 deny[msg] {
-    not bucket_excluded
-    not public_access_blocked
+	not bucket_excluded
+	not public_access_blocked
 
-    msg := sprintf("public access not blocked for bucket %s", [input.resource.id])
+	msg := sprintf("public access not blocked for bucket %s", [input.resource.id])
 }
 
 bucket_excluded {
@@ -15,7 +15,7 @@ bucket_excluded {
 }
 
 public_access_blocked {
-    every property in ["BlockPublicAcls", "BlockPublicPolicy", "IgnorePublicAcls", "RestrictPublicBuckets"] {
-        input.resource.properties.PublicAccessBlockConfiguration[property] == "true"
-    }
+	every property in ["BlockPublicAcls", "BlockPublicPolicy", "IgnorePublicAcls", "RestrictPublicBuckets"] {
+		input.resource.properties.PublicAccessBlockConfiguration[property] == "true"
+	}
 }
