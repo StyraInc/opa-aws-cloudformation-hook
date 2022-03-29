@@ -4,6 +4,7 @@ import os
 
 import requests
 import yaml
+import typing
 
 def get_all_templates():
     templates = []
@@ -38,13 +39,34 @@ def check_resource(path, name, resource, expect_allow):
     else:
         print(f"FAIL: {path}")
 
+class Loader(yaml.SafeLoader):
+    pass
 
+class Dumper(yaml.SafeDumper):
+    pass
+
+class Tagged(typing.NamedTuple):
+    tag: str
+    value: object
+
+def construct_undefined(self, node):
+    if isinstance(node, yaml.nodes.ScalarNode):
+        value = self.construct_scalar(node)
+    elif isinstance(node, yaml.nodes.SequenceNode):
+        value = self.construct_sequence(node)
+    elif isinstance(node, yaml.nodes.MappingNode):
+        value = self.construct_mapping(node)
+    else:
+        assert False, f"unexpected node: {node!r}"
+    return Tagged(node.tag, value)
+
+Loader.add_constructor(None, construct_undefined)
 
 def check_template(path):
     contents = ""
     try:
         with open(path) as file:
-            contents = yaml.safe_load(file)
+            contents = yaml.load(file, Loader=Loader)
     except Exception as e:
         print(f"ERROR: Exception raised when loading {path}", e)
         return
