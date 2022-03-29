@@ -4,9 +4,10 @@ import future.keywords
 
 import data.aws.iam.user.deny
 
-import data.test_helpers.assert_empty
+import data.assertions.assert_in
+import data.assertions.assert_not_in
+
 import data.test_helpers.create_with_properties
-import data.test_helpers.with_properties
 
 mock_create := create_with_properties("AWS::IAM::User", "IAMUserTest", {
 	"Policies": [{"PolicyDocument": {
@@ -31,7 +32,7 @@ test_deny_policy_statement_undefined {
 		}],
 	}})
 
-	deny["IAM user does not have a policy statement: IAMUserTest"] with input as inp
+	assert_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }
 
 test_allow_user_with_policy {
@@ -48,11 +49,11 @@ test_allow_user_with_policy {
 		"UserName": "WithPolicy",
 	})
 
-	count(deny) == 0 with input as inp
+	assert_not_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }
 
 test_allow_user_with_managed_policy {
 	inp := create_with_properties("AWS::IAM::User", "IAMUserTest", {"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AWSDenyAll"]})
 
-	count(deny) == 0 with input as inp
+	assert_not_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }
