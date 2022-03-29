@@ -3,8 +3,9 @@
 import os
 
 import requests
-import yaml
-import typing
+import json
+
+from cfn_flip import to_json
 
 def get_all_templates():
     templates = []
@@ -35,38 +36,26 @@ def check_resource(path, name, resource, expect_allow):
     decision = resp.json()
 
     if decision["allow"] == expect_allow:
-        print(f"SUCCESS: {path}")
+        print(f"SUCCESS: {path} {name}")
     else:
-        print(f"FAIL: {path}")
+        print(f"FAIL: {path} {name}")
 
-class Loader(yaml.SafeLoader):
-    pass
+        if len(decision["violations"]) > 0:
+            print()
 
-class Dumper(yaml.SafeDumper):
-    pass
+        for violation in decision["violations"]:
+            print(f"\t{violation}")
 
-class Tagged(typing.NamedTuple):
-    tag: str
-    value: object
-
-def construct_undefined(self, node):
-    if isinstance(node, yaml.nodes.ScalarNode):
-        value = self.construct_scalar(node)
-    elif isinstance(node, yaml.nodes.SequenceNode):
-        value = self.construct_sequence(node)
-    elif isinstance(node, yaml.nodes.MappingNode):
-        value = self.construct_mapping(node)
-    else:
-        assert False, f"unexpected node: {node!r}"
-    return Tagged(node.tag, value)
-
-Loader.add_constructor(None, construct_undefined)
+        if len(decision["violations"]) > 0:
+            print()
 
 def check_template(path):
-    contents = ""
+    contents = {}
     try:
         with open(path) as file:
-            contents = yaml.load(file, Loader=Loader)
+            contents = json.loads(to_json(file.read(), clean_up=True))
+
+
     except Exception as e:
         print(f"ERROR: Exception raised when loading {path}", e)
         return
