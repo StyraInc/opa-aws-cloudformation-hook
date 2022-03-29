@@ -27,10 +27,9 @@ route := document(lower(component), lower(type)) {
 	["AWS", component, type] = split(input.resource.type, "::")
 }
 
-
 violations[msg] {
-    # Aggregate all deny rules found in routed document
-    some msg in route.deny
+	# Aggregate all deny rules found in routed document
+	some msg in route.deny
 }
 
 #

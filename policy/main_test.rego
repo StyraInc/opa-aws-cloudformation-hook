@@ -42,6 +42,6 @@ test_simple_routing_delete_deny {
 test_input_validation {
 	main.violations["Missing input.action"] with input as {}
 	main.violations["Missing input.resource"] with input as {}
-    main.violations["Missing input.resource.id"] with input as {}
+	main.violations["Missing input.resource.id"] with input as {}
 	main.violations["Missing input.resource.type"] with input as {}
 }

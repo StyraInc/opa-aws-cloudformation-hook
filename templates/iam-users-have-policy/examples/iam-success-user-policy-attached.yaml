@@ -1,0 +1,23 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Resources:
+  UserWithPolicy:
+    Type: AWS::IAM::User
+    Properties: 
+      Policies: 
+        - PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Deny
+                Action:
+                  - '*'
+                Resource: '*'
+          PolicyName: test
+      UserName: WithPolicy
+
+  UserWithManagedPolicy:
+    Type: AWS::IAM::User
+    Properties: 
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSDenyAll
+      UserName: WithManagedPolicy

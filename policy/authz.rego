@@ -16,5 +16,5 @@ default allow = false
 #   use as a token for client connections.
 #
 allow {
-    input.identity == "changeme"
+	input.identity == "changeme"
 }
