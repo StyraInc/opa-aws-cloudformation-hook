@@ -15,5 +15,8 @@ jobs:
       with:
         version: ${{ matrix.version }}
 
-    - name: Test OPA Templates
+    - name: OPA unit tests
       run: opa test -v policy/
+
+    - name: OPA check strict
+      run: opa check --strict policy/

@@ -4,7 +4,8 @@ import future.keywords
 
 import data.aws.ec2.securitygroup.deny
 
-import data.test_helpers.assert_empty
+import data.assertions.assert_empty
+
 import data.test_helpers.create_with_properties
 
 test_deny_if_security_group_allows_all_destinations {

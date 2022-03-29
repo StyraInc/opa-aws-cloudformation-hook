@@ -9,8 +9,9 @@ deny[msg] {
 }
 
 valid_iam_scope {
-    some policy statement in input.resource.properties.Policies
-    every statement in policy {
-        statement.Action != "'*'"
-    }
+	every policy in input.resource.properties.Policies {
+		every statement in policy.PolicyDocument.Statement {
+			statement.Action != "'*'"
+		}
+	}
 }

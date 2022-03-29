@@ -2,7 +2,7 @@ package main_test
 
 import data.system.main
 
-import data.test_helpers.assert_equals
+import data.assertions.assert_equals
 
 test_simple_routing_deny {
 	inp := {"action": "CREATE", "resource": {"type": "AWS::S3::Bucket", "id": "foo"}}

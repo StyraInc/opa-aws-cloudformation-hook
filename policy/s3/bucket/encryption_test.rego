@@ -3,8 +3,6 @@ package aws.s3.bucket_encryption_test
 import future.keywords
 
 import data.aws.s3.bucket.deny
-import data.aws.s3.bucket.valid_bucket_encryption
-import data.aws.s3.bucket.valid_sse_algo
 
 import data.test_helpers.create_with_properties
 

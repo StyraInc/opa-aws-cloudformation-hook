@@ -3,8 +3,10 @@ package aws.iam.user_principal_boundary_test
 import future.keywords
 
 import data.aws.iam.user.deny
+import data.aws.iam.user.excluded_principal_name
 
-import data.test_helpers.assert_empty
+import data.assertions.assert_not_in
+
 import data.test_helpers.create_with_properties
 import data.test_helpers.with_properties
 
@@ -38,11 +40,11 @@ test_allow_permission_boundary_included {
 		"PermissionsBoundary": "arn:aws:iam::555555555555:policy/s3_deny_permissions_boundary",
 	}))
 
-	assert_empty(deny) with input as inp
+	assert_not_in("PermissionsBoundary is not set for IAMUserTest", deny) with input as inp
 }
 
 test_allow_user_name_excluded {
 	inp := object.union(mock_create, with_properties({"UserName": "excluded-cfn-hooks-stack1-046693375555"}))
 
-	assert_empty(deny) with input as inp
+	excluded_principal_name with input as inp
 }

@@ -4,7 +4,8 @@ import future.keywords
 
 import data.aws.iam.role.deny
 
-import data.test_helpers.assert_empty
+import data.assertions.assert_empty
+
 import data.test_helpers.create_with_properties
 import data.test_helpers.with_properties
 
