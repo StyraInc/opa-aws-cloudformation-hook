@@ -1,4 +1,4 @@
-package aws.rds.db
+package aws.rds.dbinstance
 
 import future.keywords
 

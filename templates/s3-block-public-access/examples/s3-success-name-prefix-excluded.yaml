@@ -2,4 +2,4 @@ Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub 'baseline-${AWS::Region}-${AWS::AccountId}'
+      BucketName: 'excluded-name-bucket'

@@ -5,6 +5,8 @@ import future.keywords
 import data.aws.iam.user.deny
 import data.aws.iam.user.excluded_principal_name
 
+import data.assertions.assert_empty
+import data.assertions.assert_in
 import data.assertions.assert_not_in
 
 import data.test_helpers.create_with_properties
@@ -25,13 +27,13 @@ test_deny_auto_generated_name_not_excluded {
 		"PermissionsBoundary": "arn:aws:iam::555555555555:policy/invalid_s3_deny_permissions_boundary",
 	}))
 
-	deny["PermissionsBoundary arn:aws:iam::555555555555:policy/invalid_s3_deny_permissions_boundary is not allowed for IAMUserTest"] with input as inp
+	assert_in("PermissionsBoundary arn:aws:iam::555555555555:policy/invalid_s3_deny_permissions_boundary is not allowed for IAMUserTest", deny) with input as inp
 }
 
 test_deny_permission_boundary_not_set {
 	inp := mock_create
 
-	deny["PermissionsBoundary is not set for IAMUserTest"] with input as inp
+	assert_in("PermissionsBoundary is not set for IAMUserTest", deny) with input as inp
 }
 
 test_allow_permission_boundary_included {

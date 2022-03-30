@@ -1,8 +1,8 @@
-package aws.rds.db_test
+package aws.rds.dbinstance_test
 
 import future.keywords
 
-import data.aws.rds.db.deny
+import data.aws.rds.dbinstance.deny
 
 import data.test_helpers.create_with_properties
 

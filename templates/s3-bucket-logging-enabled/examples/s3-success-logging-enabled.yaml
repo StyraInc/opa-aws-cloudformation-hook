@@ -3,7 +3,7 @@ Resources:
   S3Bucket:
     Type: AWS::S3::Bucket
     Properties: 
-      BucketName: 'styra-opa-bucket'
+      BucketName: 'baseline-styra-opa-bucket'
       LoggingConfiguration:
         DestinationBucketName: 'my-logging-bucket'
-        LogFilePrefix: 's3-logs-styra-opa-bucket'
+        LogFilePrefix: 's3-logs-baseline-styra-opa-bucket'

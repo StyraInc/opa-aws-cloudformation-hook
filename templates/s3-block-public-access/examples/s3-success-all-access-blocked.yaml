@@ -2,7 +2,7 @@ Resources:
   S3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub 'mybucket-${AWS::Region}-${AWS::AccountId}'
+      BucketName: 'access-blocked-bucket'
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         BlockPublicPolicy: true
