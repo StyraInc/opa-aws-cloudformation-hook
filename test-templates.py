@@ -18,7 +18,7 @@ def get_all_templates():
 
 
 def check_resource(path, name, resource, expect_allow):
-    properties = resource["Properties"]
+    properties = bools_to_string(resource["Properties"])
 
     opa_input = {
         "action": "CREATE",
@@ -49,6 +49,7 @@ def check_resource(path, name, resource, expect_allow):
         if len(decision["violations"]) > 0:
             print()
 
+
 def check_template(path):
     contents = {}
     try:
@@ -64,7 +65,35 @@ def check_template(path):
     resource_names = list(resources.keys())
 
     for name in resource_names:
+        # Some templates contain resources which we don't intend to test
+        # For those we may use an "ObjectToTest" attribute in the templates
+        # metadata section to point out which object should be verified.
+        if "Metadata" in contents and "ObjectToTest" in contents["Metadata"]:
+            if name == contents["Metadata"]["ObjectToTest"]:
+                check_resource(path, name, resources[name], "success" in path)
+            else:
+                continue
+
         check_resource(path, name, resources[name], "success" in path)
+
+
+# When presented to the hook, AWS templates converts booleans to strings...
+#
+# ¯\_(ツ)_/¯
+#
+def bools_to_string(obj):
+    for k, v in obj.items():
+        if isinstance(v, dict):
+            bools_to_string(v)
+        if isinstance(v, list):
+            for item in v:
+                if isinstance(item, dict):
+                    bools_to_string(item)
+
+        if isinstance(v, bool):
+            obj[k] = "false" if not v else "true"
+
+    return obj
 
 
 def main():

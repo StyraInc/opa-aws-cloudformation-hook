@@ -1,6 +1,7 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Metadata: 
+Metadata:
   License: Apache-2.0
+  ObjectToTest: MasterDB
 Description: 'AWS CloudFormation Sample Template RDS_MySQL_With_Read_Replica: Sample
   template showing how to create a highly-available, RDS DBInstance with a read replica.
   **WARNING** This template creates an Amazon Relational Database Service database
