@@ -8,5 +8,5 @@ deny[msg] {
 }
 
 valid_storage_encryption {
-	input.resource.properties.StorageEncrypted == true
+	input.resource.properties.StorageEncrypted == "true"
 }
