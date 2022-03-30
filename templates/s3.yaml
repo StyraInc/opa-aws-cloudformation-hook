@@ -9,6 +9,7 @@ Resources:
       Tags:
         - Key: Owner
           Value: Anders
+
   MyBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:

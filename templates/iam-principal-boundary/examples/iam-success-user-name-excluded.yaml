@@ -3,4 +3,6 @@ Resources:
   IAMUserTest:
     Type: AWS::IAM::User
     Properties:
-      UserName: !Sub 'excluded-cfn-hooks-${AWS::StackName}-${AWS::AccountId}'
+      UserName: 'excluded-cfn-hooks-user'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSDenyAll

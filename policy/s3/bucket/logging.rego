@@ -3,11 +3,13 @@ package aws.s3.bucket
 import future.keywords
 
 deny[msg] {
+	not bucket_excluded_logging
 	not valid_logging_prefix
 	msg := sprintf("logging prefix is not set correctly for bucket: %s", [input.resource.id])
 }
 
 deny[msg] {
+	not bucket_excluded_logging
 	not valid_logging_destination
 	msg := sprintf("logging destination bucket is not correct: %s", [input.resource.id])
 }
@@ -23,4 +25,9 @@ valid_logging_prefix {
 
 valid_logging_destination {
 	input.resource.properties.LoggingConfiguration.DestinationBucketName == "my-logging-bucket"
+}
+
+bucket_excluded_logging {
+	some prefix in {"excluded-", "access-", "secure-"}
+	startswith(input.resource.properties.BucketName, prefix)
 }

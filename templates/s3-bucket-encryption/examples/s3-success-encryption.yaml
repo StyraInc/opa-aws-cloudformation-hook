@@ -4,7 +4,7 @@ Resources:
   EncryptedS3Bucket:
     Type: 'AWS::S3::Bucket'
     Properties:
-      BucketName: !Sub 'encryptedbucket-${AWS::Region}-${AWS::AccountId}'
+      BucketName: 'secure-cfn-bucket-encrypted'
       BucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
