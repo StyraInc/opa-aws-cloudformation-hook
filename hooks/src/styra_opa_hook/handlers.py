@@ -56,15 +56,13 @@ def opa_query(
     )
 
     opa_input = {
-        "input": {
-            "action": action,
-            "hook": request.hookContext.hookTypeName,
-            "resource": {
-                "id": request.hookContext.targetLogicalId,
-                "name": request.hookContext.targetName,
-                "type": request.hookContext.targetType,
-                "properties": request.hookContext.targetModel.get("resourceProperties")
-            }
+        "action": action,
+        "hook": request.hookContext.hookTypeName,
+        "resource": {
+            "id": request.hookContext.targetLogicalId,
+            "name": request.hookContext.targetName,
+            "type": request.hookContext.targetType,
+            "properties": request.hookContext.targetModel.get("resourceProperties")
         }
     }
 
