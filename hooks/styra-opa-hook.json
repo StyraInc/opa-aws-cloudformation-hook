@@ -26,7 +26,10 @@
                 "AWS::EC2::SecurityGroup",
                 "AWS::EC2::SecurityGroupIngress",
                 "AWS::IAM::Role",
-                "AWS::IAM::User"
+                "AWS::IAM::User",
+                "AWS::EKS::Cluster",
+                "AWS::RDS::DBSecurityGroup",
+                "AWS::RDS::DBInstance"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -39,7 +42,10 @@
                 "AWS::EC2::SecurityGroup",
                 "AWS::EC2::SecurityGroupIngress",
                 "AWS::IAM::Role",
-                "AWS::IAM::User"
+                "AWS::IAM::User",
+                "AWS::EKS::Cluster",
+                "AWS::RDS::DBSecurityGroup",
+                "AWS::RDS::DBInstance"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
@@ -52,7 +58,10 @@
                 "AWS::EC2::SecurityGroup",
                 "AWS::EC2::SecurityGroupIngress",
                 "AWS::IAM::Role",
-                "AWS::IAM::User"
+                "AWS::IAM::User",
+                "AWS::EKS::Cluster",
+                "AWS::RDS::DBSecurityGroup",
+                "AWS::RDS::DBInstance"
             ],
             "permissions": [
                 "secretsmanager:GetSecretValue"
