@@ -55,6 +55,7 @@ def opa_query(
         status=OperationStatus.IN_PROGRESS
     )
 
+    # Querying the default decision, so don't wrap in "input" attribute
     opa_input = {
         "action": action,
         "hook": request.hookContext.hookTypeName,
@@ -76,22 +77,20 @@ def opa_query(
         resp = requests.post(type_configuration.opaUrl, json=opa_input, headers=headers)
     except requests.ConnectionError:
         LOG.error("Failed connecting to OPA at %s", type_configuration.opaUrl)
+        progress.status = OperationStatus.FAILED
 
-        # TODO wrong return type
-        return OperationStatus.FAILED
+        return progress
 
     if resp.status_code == 200:
         body = resp.json()
-        if not "result" in body:
+        if not "allow" in body:
             LOG.error("OPA returned empty/undefined result")
             progress.status = OperationStatus.FAILED
         else:
-            result = body["result"]
-            if len(result) == 0:
-                # deny style rule, so empty result == success
+            if body["allow"] is True:
                 progress.status = OperationStatus.SUCCESS
             else:
-                message = " | ".join(result)
+                message = " | ".join(body["violations"])
                 LOG.info("OPA denied the request with message: %s", message)
                 progress.status = OperationStatus.FAILED
                 progress.message = message
