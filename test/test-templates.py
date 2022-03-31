@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import sys
 
 import requests
 import json
@@ -37,17 +38,21 @@ def check_resource(path, name, resource, expect_allow):
 
     if decision["allow"] == expect_allow:
         print(f"SUCCESS: {path} {name}")
-    else:
-        print(f"FAIL: {path} {name}")
 
-        if len(decision["violations"]) > 0:
-            print()
+        return True
 
-        for violation in decision["violations"]:
-            print(f"\t{violation}")
+    print(f"FAIL: {path} {name}")
 
-        if len(decision["violations"]) > 0:
-            print()
+    if len(decision["violations"]) > 0:
+        print()
+
+    for violation in decision["violations"]:
+        print(f"\t{violation}")
+
+    if len(decision["violations"]) > 0:
+        print()
+
+    return False
 
 
 def check_template(path):
@@ -64,18 +69,22 @@ def check_template(path):
     resources = contents["Resources"]
     resource_names = list(resources.keys())
 
+    success = True
     for name in resource_names:
         # Some templates contain resources which we don't intend to test
         # For those we may use an "ObjectToTest" attribute in the templates
         # metadata section to point out which object should be verified.
         if "Metadata" in contents and "ObjectToTest" in contents["Metadata"]:
             if name == contents["Metadata"]["ObjectToTest"]:
-                check_resource(path, name, resources[name], "success" in path)
+                if not check_resource(path, name, resources[name], "success" in path):
+                    success = False
             else:
                 continue
 
-        check_resource(path, name, resources[name], "success" in path)
+        if not check_resource(path, name, resources[name], "success" in path):
+            success = False
 
+    return success
 
 # When presented to the hook, AWS templates converts booleans to strings...
 #
@@ -99,9 +108,13 @@ def bools_to_string(obj):
 def main():
     templates = get_all_templates()
 
+    success = True
     for template in templates:
-        check_template(template)
+        if not check_template(template):
+            success = False
 
+    if not success:
+        sys.exit(1)
 
 if __name__ == "__main__":
     main()
