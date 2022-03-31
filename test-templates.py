@@ -10,7 +10,7 @@ from cfn_flip import to_json
 def get_all_templates():
     templates = []
 
-    for root, _, files in os.walk("templates"):
+    for root, _, files in os.walk("examples/templates"):
         for file in files:
             templates.append(os.path.join(root, file))
 
