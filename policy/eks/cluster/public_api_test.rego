@@ -4,12 +4,10 @@ import data.aws.eks.cluster.deny
 
 import future.keywords
 
-import data.assertions.assert_empty
 import data.assertions.assert_in
 import data.assertions.assert_not_in
 
 import data.test_helpers.create_with_properties
-import data.test_helpers.with_properties
 
 test_allow_cluster_private_api {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {"ResourcesVpcConfig": {

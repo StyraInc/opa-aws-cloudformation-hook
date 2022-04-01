@@ -5,7 +5,6 @@ import future.keywords
 import data.aws.iam.user.deny
 import data.aws.iam.user.excluded_principal_name
 
-import data.assertions.assert_empty
 import data.assertions.assert_in
 import data.assertions.assert_not_in
 

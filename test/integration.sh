@@ -9,7 +9,7 @@ pid=$(echo $!)
 # Provide some time for OPA to start
 sleep 1
 
-"$SCRIPT_DIR"/test-templates.py
+"$SCRIPT_DIR"/validate.py --test=true "$SCRIPT_DIR"/../examples/templates
 
 status=$(echo $?)
 
