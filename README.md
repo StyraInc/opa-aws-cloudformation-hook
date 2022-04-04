@@ -12,4 +12,4 @@ This repository integrates AWS Cloud Formation (CFN) with OPA using [AWS Cloud F
 
 First, you will need an [AWS HOOK](https://docs.aws.amazon.com/cloudformation-cli/latest/userguide/hooks-structure.html); when creating, updating, or deleting a CloudFormation Stack, you can trigger this Hook to validate the configuration. When used in conjunction with OPA, the Hook will send the property information from each resource in a Stack to your OPA server. When this information is received, OPA will validate the request against your defined policies and send back any violations it may have found. Then, depending on your configuration, you can either stop the action a stack was attempting or log the violation. 
 
-Want to try out this integration yourself? See the AWS Cloud Formation Hooks tutorial in the [OPA documentation](https://github.com/open-policy-agent/opa/blob/main/docs/content/aws-cloudformation-hooks.md).
+Want to try out this integration yourself? See the AWS Cloud Formation Hooks tutorial in the [OPA documentation](https://www.openpolicyagent.org/docs/latest/aws-cloudformation-hooks/).
