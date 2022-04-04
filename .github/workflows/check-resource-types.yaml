@@ -1,0 +1,16 @@
+name: Check for resource type updates
+
+on:
+  schedule:
+    # Sundays at 01:00
+    - cron: "00 1 * * 0"
+
+jobs:
+  check-for-updates:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository code
+      uses: actions/checkout@v2
+
+    - name: Check for updated resource types
+      run: ci/check-resource-types.sh
