@@ -1,6 +1,8 @@
 # OPA AWS CloudFormation Hook
 
-![OPA AWS CloudFormation Hook Diagram](docs/assets/opa-aws-cloudformation.svg)
+<p align="center">
+    <img alt="OPA AWS CloudFormation Hook Diagram" src="docs/assets/opa-aws-cloudformation.svg">
+</p>
 
 This repository integrates AWS Cloud Formation (CFN) with OPA using [AWS Cloud Formation Hooks](https://aws.amazon.com/about-aws/whats-new/2022/02/aws-announces-general-availability-aws-cloudformation-hooks/). Use this integration if you want to enforce policies over AWS resources (e.g., EC2 instances, S3 buckets, etc.) provisioned with CFN. For example, using this integration you can secure any of the following plus more:
 
