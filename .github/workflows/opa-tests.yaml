@@ -18,10 +18,10 @@ jobs:
         version: ${{ matrix.version }}
 
     - name: OPA unit tests
-      run: opa test -v policy/
+      run: opa test -v examples/policy/
 
     - name: OPA check strict
-      run: opa check --strict policy/
+      run: opa check --strict examples/policy/
 
   opa-integration-tests:
     runs-on: ubuntu-latest

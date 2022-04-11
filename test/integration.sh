@@ -2,7 +2,7 @@
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
-opa run --server "$SCRIPT_DIR/../policy/" &>/dev/null &
+opa run --server "$SCRIPT_DIR/../examples/policy/" &>/dev/null &
 
 pid=$(echo $!)
 
