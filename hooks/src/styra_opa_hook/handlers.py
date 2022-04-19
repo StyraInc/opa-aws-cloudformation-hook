@@ -74,7 +74,7 @@ def opa_query(
         headers = {"Authorization": f"Bearer {token}"}
 
     try:
-        resp = requests.post(type_configuration.opaUrl, json=opa_input, headers=headers)
+        resp = requests.post(type_configuration.opaUrl, json=opa_input, headers=headers, timeout=10)
     except requests.ConnectionError:
         LOG.error("Failed connecting to OPA at %s", type_configuration.opaUrl)
         progress.status = OperationStatus.FAILED
