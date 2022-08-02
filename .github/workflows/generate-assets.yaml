@@ -39,5 +39,6 @@ jobs:
       run: |
         git config user.name github-actions
         git config user.email github-actions@github.com
-        git commit -a -m "automation: update hook zip file"
+        git add hooks/styra-opa-hook.zip
+        git commit -m "automation: update hook zip file"
         git push
