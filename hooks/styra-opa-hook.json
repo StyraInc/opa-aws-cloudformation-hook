@@ -2107,11 +2107,11 @@
     "additionalProperties": false,
     "properties": {
       "opaAuthTokenSecret": {
-        "description": "ARN referencing a secret containing a token to use for authenticating against OPA (secret key must be 'opa_auth_token')",
+        "description": "ARN referencing a Secret in Secrets Manager containing a plain-text string token to use for authenticating against the OPA agent",
         "type": "string"
       },
       "opaUrl": {
-        "description": "URL pointing to OPA for policy decisions",
+        "description": "URL pointing to an OPA agent for policy decisions",
         "type": "string"
       }
     },
