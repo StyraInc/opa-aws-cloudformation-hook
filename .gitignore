@@ -131,5 +131,3 @@ dmypy.json
 sam-tests/
 
 rpdk.log*
-
-*.zip
