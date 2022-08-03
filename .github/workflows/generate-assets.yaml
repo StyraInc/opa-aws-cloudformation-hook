@@ -25,20 +25,8 @@ jobs:
         pip install --quiet cloudformation-cli cloudformation-cli-python-plugin
         cfn submit --dry-run
 
-    - name: Git diff
-      id: git_diff
-      run: |
-        FILE_CHANGED=true
-        if ! git diff --no-ext-diff --quiet --exit-code; then
-          FILE_CHANGED=false
-        fi
-        echo "::set-output name=git_changes::$(echo $FILE_CHANGED)"
-
-    - name: Commit changes if any
-      if: steps.git_diff.outputs.git_changes
-      run: |
-        git config user.name github-actions
-        git config user.email github-actions@github.com
-        git add hooks/styra-opa-hook.zip
-        git commit -m "automation: update hook zip file"
-        git push
+    - name: Upload zip file as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: hook-package-zip
+        path: hooks/styra-opa-hook.zip
