@@ -1,11 +1,11 @@
 {
     "properties": {
         "opaUrl": {
-            "description": "URL pointing to OPA for policy decisions",
+            "description": "URL pointing to an OPA instance for policy decisions",
             "type": "string"
         },
         "opaAuthTokenSecret": {
-            "description": "ARN referencing a secret containing a token to use for authenticating against OPA (secret key must be 'opa_auth_token')",
+            "description": "ARN referencing a Secret in Secrets Manager containing a plain-text string token to use for authenticating against the OPA instance",
             "type": "string"
         }
     },

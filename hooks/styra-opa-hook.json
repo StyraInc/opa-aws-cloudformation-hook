@@ -1,6 +1,6 @@
 {
   "additionalProperties": false,
-  "description": "Hook to call out to Open Policy Agent",
+  "description": "Hook to call out to Open Policy Agent for policy decisions",
   "documentationUrl": "https://www.openpolicyagent.org/docs/latest/aws-cloudformation-hooks/",
   "handlers": {
     "preCreate": {
@@ -2107,11 +2107,11 @@
     "additionalProperties": false,
     "properties": {
       "opaAuthTokenSecret": {
-        "description": "ARN referencing a secret containing a token to use for authenticating against OPA (secret key must be 'opa_auth_token')",
+        "description": "ARN referencing a Secret in Secrets Manager containing a plain-text string token to use for authenticating against the OPA instance",
         "type": "string"
       },
       "opaUrl": {
-        "description": "URL pointing to OPA for policy decisions",
+        "description": "URL pointing to an OPA instance for policy decisions",
         "type": "string"
       }
     },
