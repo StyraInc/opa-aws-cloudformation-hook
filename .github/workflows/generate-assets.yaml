@@ -1,4 +1,4 @@
-name: Generate Assets
+name: Generate Zip File
 
 on:
   workflow_run:
@@ -7,7 +7,7 @@ on:
       - completed
 
 jobs:
-  opa-unit-tests:
+  generate-zip-file:
     runs-on: ubuntu-latest
 
     steps:
