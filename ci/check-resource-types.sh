@@ -13,7 +13,7 @@ new=$(echo "$current" \
 if [[ "$current" != "$new" ]]; then
     echo "Resource types have been updated. Please run:"
     echo
-    echo "cat hooks/styra-opa-hook.json | opa eval -I -f pretty -d build/resourcetypes.rego data.aws.cloudformation.output > hooks/styra-opa-hook-new.json"
+    echo "cat hooks/styra-opa-hook.json | opa eval -I -f pretty -d ci/resourcetypes.rego data.aws.cloudformation.output > hooks/styra-opa-hook-new.json"
     echo
     echo "mv hooks/styra-opa-hook-new.json hooks/styra-opa-hook.json"
     echo

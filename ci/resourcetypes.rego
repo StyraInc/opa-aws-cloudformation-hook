@@ -16,12 +16,21 @@ resource_types[type] {
 
 # METADATA
 # description: |
+#   Transform all resource types into a their wildcard representation, i.e. "target".
+#   Example: AWS::S3:Bucket => AWS::S3::*
+resource_targets[target] {
+	some resource_type in resource_types
+	target := concat("::", array.concat(array.slice(split(resource_type, "::"), 0, 2), ["*"]))
+}
+
+# METADATA
+# description: |
 #   Patch the provided input (the existing file) with the resource types provided at the AWS endpoint
 output := object.union(
 	input,
 	{"handlers": {
-		"preCreate": {"targetNames": resource_types},
-		"preUpdate": {"targetNames": resource_types},
-		"preDelete": {"targetNames": resource_types},
+		"preCreate": {"targetNames": resource_targets},
+		"preUpdate": {"targetNames": resource_targets},
+		"preDelete": {"targetNames": resource_targets},
 	}},
 )
