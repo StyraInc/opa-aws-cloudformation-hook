@@ -72,3 +72,7 @@ as the only argument:
 ```script
 ./deregister-hook.sh <ARN of your hook here>
 ```
+
+## Community
+
+For questions, discussions and announcements related to Styra products, services and open source projects, please join the Styra community on [Slack](https://join.slack.com/t/styracommunity/shared_invite/zt-1p81qz8g4-t2OLKbvw0J5ibdcNc62~6Q)!
