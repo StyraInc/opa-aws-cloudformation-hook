@@ -1,6 +1,6 @@
 package aws.eks.logging_enabled_test
 
-import future.keywords
+import rego.v1
 
 import data.aws.eks.cluster.deny
 
@@ -9,7 +9,7 @@ import data.assertions.assert_not_in
 
 import data.test_helpers.create_with_properties
 
-test_allow_cluster_logging_enabled {
+test_allow_cluster_logging_enabled if {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {
 		"ResourcesVpcConfig": {
 			"RoleArn": "<MY_EKS_SERVICE_ROLE_ARN>",
@@ -25,7 +25,7 @@ test_allow_cluster_logging_enabled {
 	assert_not_in(msg, deny) with input as inp
 }
 
-test_deny_no_logging_configuration {
+test_deny_no_logging_configuration if {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {
 		"ResourcesVpcConfig": {
 			"RoleArn": "<MY_EKS_SERVICE_ROLE_ARN>",

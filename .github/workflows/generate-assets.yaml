@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Setup python
       uses: actions/setup-python@v2
@@ -26,7 +26,7 @@ jobs:
         cfn submit --dry-run
 
     - name: Upload zip file as artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: hook-package-zip
         path: hooks/styra-opa-hook.zip

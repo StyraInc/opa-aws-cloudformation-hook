@@ -6,8 +6,10 @@
 #
 package system
 
-import future.keywords
+import rego.v1
 
+# METADATA
+# entrypoint: true
 main := {
 	"allow": count(violations) == 0,
 	"violations": violations,
@@ -23,11 +25,9 @@ main := {
 #   desirable, one may create a special policy for that by simply appending
 #   "delete" to the package name, e.g. data.aws.s3.bucket.delete
 #
-route := document(lower(component), lower(type)) {
-	["AWS", component, type] = split(input.resource.type, "::")
-}
+route := document(lower(component), lower(type)) if ["AWS", component, type] = split(input.resource.type, "::")
 
-violations[msg] {
+violations contains msg if {
 	# Aggregate all deny rules found in routed document
 	some msg in route.deny
 }
@@ -36,30 +36,18 @@ violations[msg] {
 # Basic input validation to avoid having to do this in each resource policy
 #
 
-violations["Missing input.resource"] {
-	not input.resource
-}
+violations contains "Missing input.resource" if not input.resource
 
-violations["Missing input.resource.type"] {
-	not input.resource.type
-}
+violations contains "Missing input.resource.type" if not input.resource.type
 
-violations["Missing input.resource.id"] {
-	not input.resource.id
-}
+violations contains "Missing input.resource.id" if not input.resource.id
 
-violations["Missing input.action"] {
-	not input.action
-}
+violations contains "Missing input.action" if not input.action
 
 #
 # Helpers
 #
 
-document(component, type) = data.aws[component][type] {
-	input.action != "DELETE"
-}
+document(component, type) := data.aws[component][type] if input.action != "DELETE"
 
-document(component, type) = data.aws[component][type].delete {
-	input.action == "DELETE"
-}
+document(component, type) := data.aws[component][type].delete if input.action == "DELETE"

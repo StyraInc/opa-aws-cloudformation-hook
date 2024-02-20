@@ -3,3 +3,5 @@
 # organizations:
 # - Styra
 package aws
+
+import rego.v1

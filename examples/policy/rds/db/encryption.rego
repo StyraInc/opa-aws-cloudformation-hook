@@ -1,12 +1,10 @@
 package aws.rds.dbinstance
 
-import future.keywords
+import rego.v1
 
-deny[msg] {
+deny contains msg if {
 	not valid_storage_encryption
 	msg := sprintf("storage encryption not enabled for: %s", [input.resource.id])
 }
 
-valid_storage_encryption {
-	input.resource.properties.StorageEncrypted == "true"
-}
+valid_storage_encryption if input.resource.properties.StorageEncrypted == "true"

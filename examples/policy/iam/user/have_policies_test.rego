@@ -1,6 +1,6 @@
 package aws.iam.user_have_policies_test
 
-import future.keywords
+import rego.v1
 
 import data.aws.iam.user.deny
 
@@ -22,7 +22,7 @@ mock_create := create_with_properties("AWS::IAM::User", "IAMUserTest", {
 	"UserName": "WithPolicy",
 })
 
-test_deny_policy_statement_undefined {
+test_deny_policy_statement_undefined if {
 	inp := create_with_properties("AWS::IAM::User", "IAMUserTest", {"AssumeRolePolicyDocument": {
 		"Version": "2012-10-17",
 		"Statement": [{
@@ -35,7 +35,7 @@ test_deny_policy_statement_undefined {
 	assert_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }
 
-test_allow_user_with_policy {
+test_allow_user_with_policy if {
 	inp := create_with_properties("AWS::IAM::User", "IAMUserTest", {
 		"Policies": [{"PolicyDocument": {
 			"PolicyName": "Test",
@@ -52,8 +52,12 @@ test_allow_user_with_policy {
 	assert_not_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }
 
-test_allow_user_with_managed_policy {
-	inp := create_with_properties("AWS::IAM::User", "IAMUserTest", {"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AWSDenyAll"]})
+test_allow_user_with_managed_policy if {
+	inp := create_with_properties(
+		"AWS::IAM::User",
+		"IAMUserTest",
+		{"ManagedPolicyArns": ["arn:aws:iam::aws:policy/AWSDenyAll"]},
+	)
 
 	assert_not_in("IAM user does not have a policy statement: IAMUserTest", deny) with input as inp
 }

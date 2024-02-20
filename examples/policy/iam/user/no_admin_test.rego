@@ -1,6 +1,6 @@
 package aws.iam.user_no_admin_test
 
-import future.keywords
+import rego.v1
 
 import data.aws.iam.user.deny
 
@@ -23,13 +23,13 @@ mock_create := create_with_properties("AWS::IAM::User", "IAMUserTest", {
 	"PermissionsBoundary": "arn:aws:iam::555555555555:policy/s3_deny_permissions_boundary",
 })
 
-test_deny_policy_statement_undefined {
+test_deny_policy_statement_undefined if {
 	inp := mock_create
 
 	assert_in("please limit the scope for IAM user: IAMUserTest", deny) with input as inp
 }
 
-test_deny_user_with_admin {
+test_deny_user_with_admin if {
 	inp := object.union(mock_create, with_properties({
 		"Policies": [
 			{"PolicyDocument": {
@@ -59,7 +59,7 @@ test_deny_user_with_admin {
 	assert_in(msg, deny) with input as inp
 }
 
-test_allow_user_without_admin {
+test_allow_user_without_admin if {
 	inp := object.union(mock_create, with_properties({
 		"Policies": [{"PolicyDocument": {
 			"PolicyName": "Test1",
@@ -78,7 +78,7 @@ test_allow_user_without_admin {
 	assert_not_in(msg, deny) with input as inp
 }
 
-test_allow_user_limited_scope {
+test_allow_user_limited_scope if {
 	inp := object.union(mock_create, with_properties({
 		"Policies": [{"PolicyDocument": {
 			"PolicyName": "Test",

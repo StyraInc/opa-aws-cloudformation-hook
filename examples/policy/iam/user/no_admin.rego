@@ -1,22 +1,18 @@
 package aws.iam.user
 
-import future.keywords
+import rego.v1
 
-deny[msg] {
+deny contains msg if {
 	not managed_policy_exist
 	not valid_iam_scope
 
 	msg := sprintf("please limit the scope for IAM user: %s", [input.resource.id])
 }
 
-valid_iam_scope {
-	every policy in input.resource.properties.Policies {
-		every statement in policy.PolicyDocument.Statement {
-			statement.Action != "'*'"
-		}
+valid_iam_scope if every policy in input.resource.properties.Policies {
+	every statement in policy.PolicyDocument.Statement {
+		statement.Action != "'*'"
 	}
 }
 
-managed_policy_exist {
-	input.resource.properties.ManagedPolicyArns
-}
+managed_policy_exist if input.resource.properties.ManagedPolicyArns
