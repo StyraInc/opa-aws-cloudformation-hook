@@ -1,28 +1,26 @@
 package aws.s3.bucket
 
-import future.keywords
+import rego.v1
 
-deny[msg] {
+deny contains msg if {
 	not bucket_excluded_encryption
 	not valid_bucket_encryption
 	msg := sprintf("bucket encryption is not enabled for bucket: %s", [input.resource.id])
 }
 
-deny[msg] {
+deny contains msg if {
 	not bucket_excluded_encryption
 	not valid_sse_algo
 	msg := sprintf("encryption not set to aws:kms for bucket: %s", [input.resource.id])
 }
 
-valid_bucket_encryption {
-	input.resource.properties.BucketEncryption != {}
-}
+valid_bucket_encryption if input.resource.properties.BucketEncryption != {}
 
-valid_sse_algo {
+valid_sse_algo if {
 	input.resource.properties.BucketEncryption.ServerSideEncryptionConfiguration[0].ServerSideEncryptionByDefault.SSEAlgorithm == "aws:kms"
 }
 
-bucket_excluded_encryption {
+bucket_excluded_encryption if {
 	some prefix in {"excluded-", "baseline-", "access-"}
 	startswith(input.resource.properties.BucketName, prefix)
 }

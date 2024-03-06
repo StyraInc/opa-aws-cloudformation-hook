@@ -1,8 +1,10 @@
 package test_helpers
 
-create_with_properties(type, id, properties) = object.union(mock_create(type, id), with_properties(properties))
+import rego.v1
 
-mock_create(type, id) = {
+create_with_properties(type, id, properties) := object.union(mock_create(type, id), with_properties(properties))
+
+mock_create(type, id) := {
 	"action": "CREATE",
 	"hook": "StyraOPA::OPA::Hook",
 	"resource": {
@@ -13,4 +15,4 @@ mock_create(type, id) = {
 	},
 }
 
-with_properties(obj) = {"resource": {"properties": obj}}
+with_properties(obj) := {"resource": {"properties": obj}}

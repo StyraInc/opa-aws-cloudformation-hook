@@ -1,15 +1,15 @@
 package aws.eks.public_api_test
 
-import data.aws.eks.cluster.deny
+import rego.v1
 
-import future.keywords
+import data.aws.eks.cluster.deny
 
 import data.assertions.assert_in
 import data.assertions.assert_not_in
 
 import data.test_helpers.create_with_properties
 
-test_allow_cluster_private_api {
+test_allow_cluster_private_api if {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {"ResourcesVpcConfig": {
 		"RoleArn": "<MY_EKS_SERVICE_ROLE_ARN>",
 		"SubnetIds": ["<MY_SUBNET_ID>"],
@@ -21,7 +21,7 @@ test_allow_cluster_private_api {
 	assert_not_in(msg, deny) with input as inp
 }
 
-test_deny_cluster_public_api {
+test_deny_cluster_public_api if {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {"ResourcesVpcConfig": {
 		"RoleArn": "<MY_EKS_SERVICE_ROLE_ARN>",
 		"SubnetIds": ["<MY_SUBNET_ID>"],
@@ -33,7 +33,7 @@ test_deny_cluster_public_api {
 	assert_in(msg, deny) with input as inp
 }
 
-test_deny_cluster_no_access {
+test_deny_cluster_no_access if {
 	inp := create_with_properties("AWS::EKS::Cluster", "EksCluster", {"ResourcesVpcConfig": {
 		"RoleArn": "<MY_EKS_SERVICE_ROLE_ARN>",
 		"SubnetIds": ["<MY_SUBNET_ID>"],

@@ -8,13 +8,13 @@
 #
 package system.authz
 
-default allow = false
+import rego.v1
+
+default allow := false
 
 # METADATA
 # description: |
 #   See the README.md file contained in this repo for how to configure an AWS Secret to
 #   use as a token for client connections.
 #
-allow {
-	input.identity == "changeme"
-}
+allow if input.identity == "changeme"
