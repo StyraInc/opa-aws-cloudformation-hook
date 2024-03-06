@@ -12,6 +12,8 @@ rules:
     line-length:
       level: error
       non-breakable-word-threshold: 80
+    rule-name-repeats-package:
+      level: ignore
   testing:
     print-or-trace-call:
       level: error
